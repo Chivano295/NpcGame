@@ -2,17 +2,39 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AgentBrain : MonoBehaviour
+namespace Steering
 {
-    // Start is called before the first frame update
-    void Start()
+    public class AgentBrain : MonoBehaviour
     {
-        
-    }
+        enum AgentBehaviours { Aggressive, Defensive, Loyal, Wanderer, GuardPathA, GuardPathB };
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+
+        private Steering steering;
+
+        private void Awake()
+        {
+            steering = GetComponent<Steering>();
+        }
+
+        void SetBehavior(IBehavior[] behavior, string label)
+        {
+            List<IBehavior> behaviors = new List<IBehavior>();
+
+            for (int i = 0; i < behavior.Length; i++)
+                behaviors.Add(behavior[i]);
+
+            steering.SetBehaviors(behaviors, label);
+        }
+
+
+        public void MoveTo(Vector3 position)
+        {
+            SetBehavior(new IBehavior[] { new Arrive(position) }, "MoveTo");
+        }
+
+        private void Start()
+        {
+            MoveTo(new Vector3(10, 0, 10));
+        }
     }
 }

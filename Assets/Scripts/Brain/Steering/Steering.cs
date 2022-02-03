@@ -16,6 +16,7 @@ namespace Steering
         public Vector3 velocity = Vector3.zero; // current velocity      
         public Vector3 steering = Vector3.zero; //steering force
         public BehaviorList m_behaviors = new BehaviorList(); // all behaviors for this steering object
+
         void Start()
         {
             position = transform.position;
@@ -25,10 +26,10 @@ namespace Steering
         {
             //Steering general: calculate steering force
             steering = Vector3.zero;
-           foreach(IBehavior behavior in m_behaviors)
-            {
+
+            foreach(IBehavior behavior in m_behaviors)
                 steering += behavior.CalculateSteeringForce(Time.fixedDeltaTime, new BehaviorContext(position, velocity, settings));
-            }
+
             // make sure Y is fixxed its only done on the XZ axis now
             steering.y = 0f;
             //Steering general: clamp steering force to maximum steering force and apply mass
@@ -48,9 +49,7 @@ namespace Steering
             Support.DrawLabel(transform.position, m_label, Color.white);
 
             foreach(IBehavior behavior in m_behaviors)
-            {
                 behavior.OnDrawGizmos(new BehaviorContext(position, velocity, settings));
-            }
         }
 
         public void SetBehaviors(BehaviorList behaviors, string label = "")
@@ -61,11 +60,7 @@ namespace Steering
 
             //start all behaviours
             foreach(IBehavior behavior in m_behaviors)
-            {
                 behavior.start(new BehaviorContext(position, velocity, settings));
-            }
-
-                
         }
 
     }

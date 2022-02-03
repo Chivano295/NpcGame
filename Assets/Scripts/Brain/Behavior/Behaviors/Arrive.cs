@@ -5,21 +5,23 @@ namespace Steering
 {
     public class Arrive : Behaviour
     {
-        public GameObject m_Target;
+        public Vector3 m_Target;
+
         public override void start(BehaviorContext context)
         {
             base.start(context);
             //initialize things for behavior here
-            
         }
-      public Arrive(GameObject target)
+
+        public Arrive(Vector3 position)
         {
-            m_Target = target;
+            m_Target = position;
         }
+
         override public Vector3 CalculateSteeringForce(float dt, BehaviorContext context)
         {
             //update target position, e.g.
-            positionTarget = m_Target.transform.position;
+            positionTarget = m_Target;
             positionTarget.y = context.m_position.y;
 
             //calculate stop offset
@@ -36,11 +38,10 @@ namespace Steering
 
             //update desired velocity and return force
             if (distance > 0.001f)
-            {
                 velocityDesired = (clippedSpeed / distance) * targetOffset;
-            }
             else
                 velocityDesired = Vector3.zero;
+
             return velocityDesired - context.m_velocity;
             
         }
@@ -49,8 +50,8 @@ namespace Steering
         {
             base.OnDrawGizmos(context);
             // draw things for behavior
-            Support.DrawWireDisc(m_Target.transform.position, context.m_settings.arriveDistance, Color.yellow);
-            Support.DrawWireDisc(m_Target.transform.position, context.m_settings.slowingDistance, Color.yellow);
+            Support.DrawWireDisc(m_Target, context.m_settings.arriveDistance, Color.yellow);
+            Support.DrawWireDisc(m_Target, context.m_settings.slowingDistance, Color.yellow);
         }
     }
 }
