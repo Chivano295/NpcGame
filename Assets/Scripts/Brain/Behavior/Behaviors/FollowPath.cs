@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Steering
 {
-    public class FollowPath : Behaviour
+    public class FollowPath : Behavior
     {
         private GameObject[] waypointList;
         private string waypointTag = "Waypoint";
@@ -16,9 +16,9 @@ namespace Steering
         {
             waypointList = waypoints;
         }
-        public override void start(BehaviorContext context)
+        public override void Start(BehaviorContext context)
         {
-            base.start(context);
+            base.Start(context);
             //initialize things for behavior here
             
         }
@@ -29,7 +29,7 @@ namespace Steering
            
 
             // calculate distance to waypoint
-            float _distanceToWaypoint = (waypointList[waypointIndex].transform.position - context.m_position).magnitude;
+            float _distanceToWaypoint = (waypointList[waypointIndex].transform.position - context.position).magnitude;
 
             // update waypoint index if object is within radius
             if (_distanceToWaypoint < waypointRadius)
@@ -47,8 +47,8 @@ namespace Steering
             positionTarget = waypointList[waypointIndex].transform.position;
             //update target position plus desired velocity, and returning steering force
 
-            velocityDesired = (positionTarget - context.m_position).normalized * context.m_settings.maxDesiredVelocity;
-            return velocityDesired - context.m_velocity;
+            velocityDesired = (positionTarget - context.position).normalized * context.settings.maxDesiredVelocity;
+            return velocityDesired - context.velocity;
         }
 
         public override void OnDrawGizmos(BehaviorContext context)

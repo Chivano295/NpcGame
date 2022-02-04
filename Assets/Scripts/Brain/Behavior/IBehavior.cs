@@ -12,7 +12,7 @@ namespace Steering
         /// Allow the behaviour to initialize
         /// </summary>
         /// <param name="context">All the context information needed to perform the task at hand.</param>
-        void start(BehaviorContext context);
+        void Start(BehaviorContext context);
 
         ///<summary>
         /// Calculate the steering force contributed by this behavior

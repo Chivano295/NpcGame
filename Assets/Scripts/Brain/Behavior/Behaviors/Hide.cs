@@ -6,20 +6,20 @@ namespace Steering
     using ColliderList = List<Collider>;
     using HideList     = List<Vector3>;
 
-    public class Hide : Behaviour 
+    public class Hide : Behavior 
     {
-        readonly private GameObject m_target; // the target object we are hiding from
+        readonly private GameObject target; // the target object we are hiding from
                                  
         // info used to find a hiding place and draw gizmos 
-        private ColliderList m_colliders;     // all the colliders in the scene that match the hide layer
-        private HideList     m_hidingPlaces;  // the list with hiding places
-        private Vector3      m_hidingPlace;   // the current hiding place
+        private ColliderList colliders;     // all the colliders in the scene that match the hide layer
+        private HideList     hidingPlaces;  // the list with hiding places
+        private Vector3      hidingPlace;   // the current hiding place
 
         //------------------------------------------------------------------------------------------
         //------------------------------------------------------------------------------------------
-        public Hide(GameObject target) 
+        public Hide(GameObject targ) 
         {
-            m_target = target;
+            target = targ;
         }
 
         //------------------------------------------------------------------------------------------
@@ -29,7 +29,7 @@ namespace Steering
             base.Start(context);
 
             // find all obstacles that match our hide layer name
-            m_colliders = FindCollidersWithLayer(context.m_settings.m_hideLayer);
+            colliders = FindCollidersWithLayer(context.settings.hideLayer);
         }
 
         //------------------------------------------------------------------------------------------
@@ -59,7 +59,7 @@ namespace Steering
             // calculate place for the current obstacle
             Vector3 obstacleDirection = (collider.transform.position - enemy_position).normalized;
             Vector3 pointOtherSide    =  collider.transform.position + obstacleDirection;
-            Vector3 hidingPlace       =  collider.ClosestPoint(pointOtherSide) + (obstacleDirection * context.m_settings.m_hideOffset);
+            Vector3 hidingPlace       =  collider.ClosestPoint(pointOtherSide) + (obstacleDirection * context.settings.hideOffset);
 
             // return hiding place
             return hidingPlace;
@@ -69,25 +69,25 @@ namespace Steering
         {
             // loop over colliders, find all hiding places, and find the nearest hiding place
             float closestDistanceSqr = float.MaxValue;
-            m_hidingPlace            = context.m_position;
-            m_hidingPlaces           = new HideList();
-            for (int i = 0; i < m_colliders.Count; i++)
+            hidingPlace            = context.position;
+            hidingPlaces           = new HideList();
+            for (int i = 0; i < colliders.Count; i++)
             {
                 // calculate hiding place for the current obstacle and remember it so we can draw gizmos
-                Vector3 hidingPlace = CalculateHidingPlace(context, m_colliders[i], enemy_position);
-                m_hidingPlaces.Add(hidingPlace);
+                Vector3 hidingPlace = CalculateHidingPlace(context, colliders[i], enemy_position);
+                hidingPlaces.Add(hidingPlace);
 
                 // update closest hiding place if this hiding place is closer than the previous
-                float distanceToHidingPlaceSqr = (context.m_position - hidingPlace).sqrMagnitude;
+                float distanceToHidingPlaceSqr = (context.position - hidingPlace).sqrMagnitude;
                 if (distanceToHidingPlaceSqr < closestDistanceSqr)
                 {
                     closestDistanceSqr = distanceToHidingPlaceSqr; // we have a new closest point
-                    m_hidingPlace      = hidingPlace;              // remember it as the new hiding place
+                    hidingPlace      = hidingPlace;              // remember it as the new hiding place
                 }
             }
 
             // return hiding place 
-            return m_hidingPlace;
+            return hidingPlace;
         }
 
         //------------------------------------------------------------------------------------------
@@ -95,12 +95,12 @@ namespace Steering
         override public Vector3 CalculateSteeringForce(float dt, BehaviorContext context)
         {
             // update target position plus desired velocity and return steering force    
-            m_positionTarget  = CalculateHidingPlace(context, m_target.transform.position);
-            if (ArriveEnabled(context) && WithinArriveSlowingDistance(context, m_positionTarget))
-                m_velocityDesired = CalculateArriveSteeringForce(context, m_positionTarget);
+            positionTarget  = CalculateHidingPlace(context, target.transform.position);
+            if (ArriveEnabled(context) && WithinArriveSlowingDistance(context, positionTarget))
+                velocityDesired = CalculateArriveSteeringForce(context, positionTarget);
             else
-                m_velocityDesired = (m_positionTarget - context.m_position).normalized * context.m_settings.m_maxDesiredVelocity;
-            return m_velocityDesired - context.m_velocity;
+                velocityDesired = (positionTarget - context.position).normalized * context.settings.maxDesiredVelocity;
+            return velocityDesired - context.velocity;
         }
 
         //------------------------------------------------------------------------------------------
@@ -110,9 +110,10 @@ namespace Steering
             base.OnDrawGizmos(context);
 
             // draw solid discs at all possible hiding places and the selected one
-            foreach (Vector3 hidingPlace in m_hidingPlaces)
-                DrawGizmos.DrawSolidDisc(hidingPlace, 0.25f, Color.blue);
-            DrawGizmos.DrawWireDisc(m_hidingPlace, 0.35f, Color.blue);
+            foreach (Vector3 hidingPlace in hidingPlaces)
+                Support.DrawSolidDisc(hidingPlace, 0.25f, Color.blue);
+
+            Support.DrawWireDisc(hidingPlace, 0.35f, Color.blue);
 
             if (ArriveEnabled(context))
                 OnDrawArriveGizmos(context);

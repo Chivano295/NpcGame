@@ -3,11 +3,11 @@ using UnityEngine;
 
 namespace Steering
 {
-    public class Example : Behaviour
+    public class Example : Behavior
     {
-        public override void start(BehaviorContext context)
+        public override void Start(BehaviorContext context)
         {
-            base.start(context);
+            base.Start(context);
             //initialize things for behavior here
             
         }
@@ -16,11 +16,11 @@ namespace Steering
         override public Vector3 CalculateSteeringForce(float dt, BehaviorContext context)
         {
             //update target position, e.g.
-            positionTarget = context.m_position;
+            positionTarget = context.position;
 
             //calculate desired velocity and return steering force, e.g. 
-            velocityDesired = (positionTarget - context.m_position).normalized * context.m_settings.maxDesiredVelocity;
-            return velocityDesired - context.m_velocity;
+            velocityDesired = (positionTarget - context.position).normalized * context.settings.maxDesiredVelocity;
+            return velocityDesired - context.velocity;
         }
 
         public override void OnDrawGizmos(BehaviorContext context)

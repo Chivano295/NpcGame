@@ -8,14 +8,14 @@ namespace Steering
     public class Steering : MonoBehaviour
     {
         [Header("Steering settings")]
-        public string m_label; // label to show when running
+        public string label; // label to show when running
         public GenericSteering settings; // de steering settings for all behaviour
 
         [Header("Steering runtime")]
         public Vector3 position = Vector3.zero;// current position       
         public Vector3 velocity = Vector3.zero; // current velocity      
         public Vector3 steering = Vector3.zero; //steering force
-        public BehaviorList m_behaviors = new BehaviorList(); // all behaviors for this steering object
+        public BehaviorList behaviors = new BehaviorList(); // all behaviors for this steering object
 
         void Start()
         {
@@ -27,7 +27,7 @@ namespace Steering
             //Steering general: calculate steering force
             steering = Vector3.zero;
 
-            foreach(IBehavior behavior in m_behaviors)
+            foreach(IBehavior behavior in behaviors)
                 steering += behavior.CalculateSteeringForce(Time.fixedDeltaTime, new BehaviorContext(position, velocity, settings));
 
             // make sure Y is fixxed its only done on the XZ axis now
@@ -46,21 +46,21 @@ namespace Steering
         private void OnDrawGizmos()
         {
             Support.DrawRay(transform.position, velocity, Color.red);
-            Support.DrawLabel(transform.position, m_label, Color.white);
+            Support.DrawLabel(transform.position, label, Color.white);
 
-            foreach(IBehavior behavior in m_behaviors)
+            foreach(IBehavior behavior in behaviors)
                 behavior.OnDrawGizmos(new BehaviorContext(position, velocity, settings));
         }
 
         public void SetBehaviors(BehaviorList behaviors, string label = "")
         {
             //remember new settings
-            m_label = label;
-            m_behaviors = behaviors;
+            label = label;
+            behaviors = behaviors;
 
-            //start all behaviours
-            foreach(IBehavior behavior in m_behaviors)
-                behavior.start(new BehaviorContext(position, velocity, settings));
+            //Start all behaviours
+            foreach(IBehavior behavior in behaviors)
+                behavior.Start(new BehaviorContext(position, velocity, settings));
         }
 
     }

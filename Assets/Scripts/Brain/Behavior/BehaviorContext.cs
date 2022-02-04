@@ -8,14 +8,14 @@ namespace Steering
 
     public class BehaviorContext : MonoBehaviour
     {
-        public Vector3 m_position; // the current position
-        public Vector3 m_velocity; // the currten velocity
-        public GenericSteering m_settings; // all the steering settings
-        public BehaviorContext(Vector3 position, Vector3 velocity, GenericSteering settings)
+        public Vector3 position; // the current position
+        public Vector3 velocity; // the currten velocity
+        public GenericSteering settings; // all the steering settings
+        public BehaviorContext(Vector3 pos, Vector3 vel, GenericSteering set)
         {
-            m_position = position;
-            m_velocity = velocity;
-            m_settings = settings;
+            position = pos;
+            velocity = vel;
+            settings = set;
         }
     }
 }

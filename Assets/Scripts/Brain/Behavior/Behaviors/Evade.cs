@@ -3,22 +3,22 @@ using UnityEngine;
 
 namespace Steering
 {
-    public class Evade : Behaviour
+    public class Evade : Behavior
     {
-        public GameObject m_target;
+        public GameObject target;
         public Vector3 prevTargetPos;
         public Vector3 currentTargetPos;
 
-        public override void start(BehaviorContext context)
+        public override void Start(BehaviorContext context)
         {
-            base.start(context);
+            base.Start(context);
             //initialize things for behavior here
             
         }
 
         public Evade(GameObject target)
         {
-            m_target = target;
+            target = target;
             
         }
 
@@ -26,14 +26,14 @@ namespace Steering
         override public Vector3 CalculateSteeringForce(float dt, BehaviorContext context)
         {
             prevTargetPos = currentTargetPos;
-            currentTargetPos = m_target.transform.position;
+            currentTargetPos = target.transform.position;
 
             // calculate speed
            Vector3 speed =  (currentTargetPos - prevTargetPos) / dt;
             //the calculation for the steering force
-            positionTarget = (currentTargetPos + speed) * context.m_settings.lookAheadTime;
-            velocityDesired = -(positionTarget - context.m_position) * context.m_settings.maxDesiredVelocity;
-            return velocityDesired - context.m_velocity;
+            positionTarget = (currentTargetPos + speed) * context.settings.lookAheadTime;
+            velocityDesired = -(positionTarget - context.position) * context.settings.maxDesiredVelocity;
+            return velocityDesired - context.velocity;
            
         }
 

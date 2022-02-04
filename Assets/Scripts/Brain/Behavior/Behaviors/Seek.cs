@@ -4,26 +4,26 @@ using UnityEngine;
 
 namespace Steering
 {
-    public class Seek : Behaviour
+    public class Seek : Behavior
     {
-        public GameObject m_Target;
-        public override void start(BehaviorContext context)
+        public GameObject Target;
+        public override void Start(BehaviorContext context)
         {
-            base.start(context);
+            base.Start(context);
             //initialize things for behavior here
         }
         public Seek(GameObject target)
         {
-            m_Target = target;
+            Target = target;
         }
 
         override public Vector3 CalculateSteeringForce(float dt, BehaviorContext context)
         {
             
             //update target position plus desired velocity, and returning steering force
-            positionTarget = m_Target.transform.position;
-            velocityDesired = (positionTarget - context.m_position).normalized * context.m_settings.maxDesiredVelocity;
-            return velocityDesired - context.m_velocity;
+            positionTarget = Target.transform.position;
+            velocityDesired = (positionTarget - context.position).normalized * context.settings.maxDesiredVelocity;
+            return velocityDesired - context.velocity;
         }
 
         public override void OnDrawGizmos(BehaviorContext context)

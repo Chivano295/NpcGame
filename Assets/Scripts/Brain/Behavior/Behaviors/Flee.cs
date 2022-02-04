@@ -4,12 +4,12 @@ using UnityEngine;
 
 namespace Steering
 {
-    public class Flee : Behaviour
+    public class Flee : Behavior
     {
         
-        public override void start(BehaviorContext context)
+        public override void Start(BehaviorContext context)
         {
-            base.start(context);
+            base.Start(context);
             //initialize things for behavior here
         }
 
@@ -19,8 +19,8 @@ namespace Steering
             GameObject _player = GameObject.FindGameObjectWithTag("Player");
             //update target position plus desired velocity, and returning steering force
             positionTarget = _player.transform.position;
-            velocityDesired = -(positionTarget - context.m_position).normalized * context.m_settings.maxDesiredVelocity;
-            return velocityDesired - context.m_velocity;
+            velocityDesired = -(positionTarget - context.position).normalized * context.settings.maxDesiredVelocity;
+            return velocityDesired - context.velocity;
         }
 
         public override void OnDrawGizmos(BehaviorContext context)

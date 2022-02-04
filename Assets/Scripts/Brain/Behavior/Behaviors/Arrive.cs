@@ -3,38 +3,38 @@ using UnityEngine;
 
 namespace Steering
 {
-    public class Arrive : Behaviour
+    public class Arrive : Behavior
     {
-        public Vector3 m_Target;
+        public Vector3 Target;
 
-        public override void start(BehaviorContext context)
+        public override void Start(BehaviorContext context)
         {
-            base.start(context);
+            base.Start(context);
             //initialize things for behavior here
         }
 
         public Arrive(Vector3 position)
         {
-            m_Target = position;
+            Target = position;
         }
 
         override public Vector3 CalculateSteeringForce(float dt, BehaviorContext context)
         {
             //update target position, e.g.
-            positionTarget = m_Target;
-            positionTarget.y = context.m_position.y;
+            positionTarget = Target;
+            positionTarget.y = context.position.y;
 
             //calculate stop offset
-            Vector3 stopVector = (context.m_position - positionTarget).normalized * context.m_settings.arriveDistance;
+            Vector3 stopVector = (context.position - positionTarget).normalized * context.settings.arriveDistance;
             Vector3 stopPosition = positionTarget + stopVector;
 
             //how many meters to go until stopping
-            Vector3 targetOffset = stopPosition - context.m_position;
+            Vector3 targetOffset = stopPosition - context.position;
             float distance = targetOffset.magnitude;
 
             // calculate ramped speed ramped/clipped speed
-            float rampedSpeed = context.m_settings.maxDesiredVelocity * (distance / context.m_settings.slowingDistance);
-            float clippedSpeed = Mathf.Min(rampedSpeed, context.m_settings.maxDesiredVelocity);
+            float rampedSpeed = context.settings.maxDesiredVelocity * (distance / context.settings.slowingDistance);
+            float clippedSpeed = Mathf.Min(rampedSpeed, context.settings.maxDesiredVelocity);
 
             //update desired velocity and return force
             if (distance > 0.001f)
@@ -42,7 +42,7 @@ namespace Steering
             else
                 velocityDesired = Vector3.zero;
 
-            return velocityDesired - context.m_velocity;
+            return velocityDesired - context.velocity;
             
         }
 
@@ -50,8 +50,8 @@ namespace Steering
         {
             base.OnDrawGizmos(context);
             // draw things for behavior
-            Support.DrawWireDisc(m_Target, context.m_settings.arriveDistance, Color.yellow);
-            Support.DrawWireDisc(m_Target, context.m_settings.slowingDistance, Color.yellow);
+            Support.DrawWireDisc(Target, context.settings.arriveDistance, Color.yellow);
+            Support.DrawWireDisc(Target, context.settings.slowingDistance, Color.yellow);
         }
     }
 }
