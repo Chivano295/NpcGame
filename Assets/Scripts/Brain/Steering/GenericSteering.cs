@@ -23,9 +23,11 @@ public class GenericSteering : ScriptableObject
     public float wanderCircleRadius = 5f;  // circle radius
     public float wanderNoiseAngle = 10f;  // how much it can differ from the last one
 
-    [Header("Avoid Wall")]
+    [Header("Avoiding")]
     public float avoidDistance = 10;
     public float avoidMaxForce = 20;
+    public string wallLayer;
+    public string obstacleLayer;
 
     [Header("Flocking")]
     public string flockLayer;
@@ -36,12 +38,6 @@ public class GenericSteering : ScriptableObject
     public float flockSeparationWeight;
     public float flockSeparationRadius;
     public float flockVisibilityAngle;
-
-    [Header("Avoid Obstacle")]
-    public string obstacleLayer;
-
-    [Header("Avoid Wall")]
-    public string wallLayer;
 
     [Header("Hiding")]
     public string hideLayer;

@@ -5,8 +5,8 @@ namespace Steering
     public abstract class Behavior: IBehavior
     {
         [Header("Behavior Runtime")]
-        public Vector3 positionTarget     = Vector3.zero; // target position
-        public Vector3 velocityDesired    = Vector3.zero; // desired velocity
+        public Vector3 positionTarget  = Vector3.zero; // target position
+        public Vector3 velocityDesired = Vector3.zero; // desired velocity
 
         //------------------------------------------------------------------------------------------
         //------------------------------------------------------------------------------------------
@@ -23,11 +23,6 @@ namespace Steering
         //------------------------------------------------------------------------------------------
         public virtual void OnDrawGizmos(BehaviorContext context)
         {
-            // draw a line to the target position
-#if false
-            DrawGizmos.DrawLine(context.position, positionTarget, Color.yellow);
-#endif
-
             // draw desired velocity
             Support.DrawRay(context.position, velocityDesired, Color.blue);
         }

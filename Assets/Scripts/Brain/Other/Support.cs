@@ -14,6 +14,14 @@ public class Support : MonoBehaviour
         UnityEditor.Handles.color = color;
         UnityEditor.Handles.DrawSolidDisc(position + direction, Vector3.up, 0.25f);
     }
+
+    static public void DrawLine(Vector3 from, Vector3 to, Color color)
+    {
+        Debug.DrawLine(from, to, color);
+        UnityEditor.Handles.color = color;
+        UnityEditor.Handles.DrawSolidDisc(from + (to - from), Vector3.up, 0.25f);
+    }
+
     public static void DrawLabel(Vector3 position, string label, Color color)
     {
         //draw alabel at a certain position with color
@@ -22,6 +30,7 @@ public class Support : MonoBehaviour
         UnityEditor.Handles.Label(position, label);
         UnityEditor.Handles.EndGUI();
     }
+
     public static void DrawWireDisc(Vector3 position, float radius, Color color)
     {
         if (radius <= 0)

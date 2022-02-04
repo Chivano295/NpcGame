@@ -10,7 +10,11 @@ namespace Steering
         {
             base.Start(context);
             //initialize things for behavior here
-            
+        }
+
+        public Wander(Transform transform)
+        {
+            wanderAngle = Vector3.SignedAngle(transform.forward, Vector3.right, Vector3.up) * Mathf.Deg2Rad;
         }
       
 
@@ -40,22 +44,26 @@ namespace Steering
             base.OnDrawGizmos(context);
             // draw things for behavior
 
+            GenericSteering settings = context.settings; // saves settings for optimazation
+
             //draw circle
-            Vector3 centerOffCircle = context.position + context.velocity.normalized * context.settings.wanderCircleDistance;
-            Support.DrawWireDisc(centerOffCircle, context.settings.wanderCircleDistance, Color.black);
+            float a = settings.wanderNoiseAngle * Mathf.Deg2Rad;
+            // Geen idee wat hier gebeurt :/ (is van video)
+            Vector3 rangeMin = new Vector3(settings.wanderCircleRadius * Mathf.Cos(wanderAngle - a), 0, settings.wanderCircleRadius * Mathf.Sin(wanderAngle - a));
+            Vector3 rangeMax = new Vector3(settings.wanderCircleRadius * Mathf.Cos(wanderAngle + a), 0, settings.wanderCircleRadius * Mathf.Sin(wanderAngle + a));
+            Vector3 centerOfCircle = context.position + context.velocity.normalized * settings.wanderCircleDistance;
 
-            //draw noise lines
-            float a = context.settings.wanderNoiseAngle * Mathf.Deg2Rad;
-            Vector3 rangeMin = new Vector3(context.settings.wanderCircleRadius * Mathf.Cos(wanderAngle - 4),
-                                           0.0f,
-                                           context.settings.wanderCircleRadius * Mathf.Sin(wanderAngle - a));
+            // Draws outter circle & targeted position
+            Support.DrawWireDisc(centerOfCircle, settings.wanderCircleRadius, Color.black);
+            Support.DrawSolidDisc(positionTarget, 0.25f, Color.red);
 
-            Vector3 rangeMax = new Vector3(context.settings.wanderCircleRadius * Mathf.Cos(wanderAngle + a),
-                                           0.0f,
-                                           context.settings.wanderCircleRadius * Mathf.Sin(wanderAngle + a));
+            // Draws inner 2 lines
+            Support.DrawLine(centerOfCircle, centerOfCircle + rangeMin, Color.black);
+            Support.DrawLine(centerOfCircle, centerOfCircle + rangeMax, Color.black);
 
-            Debug.DrawLine(centerOffCircle, centerOffCircle + rangeMin, Color.black);
-            Debug.DrawLine(centerOffCircle, centerOffCircle + rangeMax, Color.black);
+            // Drwas from ai position to center of circle / towards velocity
+            Support.DrawLine(context.position, centerOfCircle, Color.white);
+            Support.DrawRay(context.position, velocityDesired, Color.blue);
         }
     }
 }

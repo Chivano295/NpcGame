@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Steering
 {
+    [RequireComponent(typeof(Steering))]
     public class AgentBrain : MonoBehaviour
     {
         enum AgentBehaviours { Aggressive, Defensive, Loyal, Wanderer, GuardPathA, GuardPathB };
@@ -29,7 +30,7 @@ namespace Steering
 
         public void MoveTo(Vector3 position)
         {
-            SetBehavior(new IBehavior[] { new Arrive(position) }, "MoveTo");
+            SetBehavior(new IBehavior[] { new Wander(this.transform), new AvoidObstacle() }, "MoveTo");
         }
 
         private void Start()

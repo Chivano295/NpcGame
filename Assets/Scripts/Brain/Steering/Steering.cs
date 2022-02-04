@@ -52,11 +52,11 @@ namespace Steering
                 behavior.OnDrawGizmos(new BehaviorContext(position, velocity, settings));
         }
 
-        public void SetBehaviors(BehaviorList behaviors, string label = "")
+        public void SetBehaviors(BehaviorList behav, string lab = "")
         {
             //remember new settings
-            label = label;
-            behaviors = behaviors;
+            behaviors = behav;
+            label = lab;
 
             //Start all behaviours
             foreach(IBehavior behavior in behaviors)
