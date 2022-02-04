@@ -19,6 +19,20 @@ MonoBehaviour:
   arriveDistance: 2
   slowingDistance: 4
   lookAheadTime: 1
-  wanderCircleDistance: 5
+  wanderCircleDistance: 10
   wanderCircleRadius: 5
-  wanderNoiseAngle: 10
+  wanderNoiseAngle: 50
+  avoidDistance: 5
+  avoidMaxForce: 90
+  wallLayer: EPic
+  obstacleLayer: EPic
+  flockLayer: 
+  flockAlignmentWeight: 0
+  flockCohesionWeight: 0
+  flockAlignmentRadius: 0
+  flockCohesionRadius: 0
+  flockSeparationWeight: 0
+  flockSeparationRadius: 0
+  flockVisibilityAngle: 0
+  hideLayer: 
+  hideOffset: 0
