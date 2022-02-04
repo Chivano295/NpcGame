@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
+    public GameObject Mainmenu;
+    public GameObject Credits;
     public void ChangeScene(string scene)
     {
         Time.timeScale = 1f;
@@ -14,4 +16,16 @@ public class MainMenu : MonoBehaviour
     {
         Application.Quit();
     }
+
+    public void CreditsOn()
+    {
+        Mainmenu.SetActive(false);
+        Credits.SetActive(true);
+    }
+    public void CreditsOff()
+    {
+        Mainmenu.SetActive(true);
+        Credits.SetActive(false);
+    }
+
 }
