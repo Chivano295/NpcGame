@@ -68,6 +68,8 @@ namespace SimpleBehaviorTree.Examples
                 Vector3 desiredVelocity = targetDirection.normalized * m_activeSpeed;
 
                 // update position and rotation
+                print(desiredVelocity);
+
                 transform.position    = transform.position + desiredVelocity * Time.deltaTime;
                 transform.rotation    = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(targetDirection), m_rotationSpeed * Time.deltaTime);
                 transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
