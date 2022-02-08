@@ -41,8 +41,6 @@ namespace Steering
         {
             // find all neighbors
             Collider[] neighbors = Physics.OverlapSphere(context.position, largestRadius, flockLayer, QueryTriggerInteraction.Ignore);
-
-            Debug.Log(neighbors.Length);
             if (neighbors.Length == 0)
                 return Vector3.zero;
 
@@ -54,20 +52,11 @@ namespace Steering
             // process all neigbors
             foreach (Collider neighbor in neighbors)
             {
-                // skip this agent
-                //if (neighbor == myCollider)
-                //    continue;
-
-                if (neighbor.gameObject.layer != flockLayer)
-                    continue;
-
-                // get steering component from neighbor (if any)
+                // get AgentBrain component from neighbor (if any)
                 AgentBrain neighborSteering = neighbor.gameObject.GetComponent<AgentBrain>();
+
                 if (neighborSteering == null)
-                {
-                    Debug.LogError($"ERROR: Flock Behavior found neighbor in layer {context.settings.flockLayer} without AgentBrain script!");
                     continue;
-                }
 
                 // calcute direction and squared distance to neighbor
                 Vector3 neighborDirection = neighborSteering.position - context.position;
@@ -85,7 +74,7 @@ namespace Steering
 
             // calculate desired velocity
             Vector3 desiredVelocity = alignment .DesiredVelocity()                   * context.settings.flockAlignmentWeight +
-                                      cohesion  .DesiredVelocity(context.position) * context.settings.flockCohesionWeight  +
+                                      cohesion  .DesiredVelocity(context.position)   * context.settings.flockCohesionWeight  +
                                       separation.DesiredVelocity()                   * context.settings.flockSeparationWeight;
             return desiredVelocity.normalized * context.settings.maxDesiredVelocity;
         }

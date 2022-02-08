@@ -18,6 +18,7 @@ namespace SimpleBehaviorTree.Examples
         [Header("Object Settings")]
         public GameObject target; // our target object
         public GameObject parent; // The parent from the agent
+        public GameObject[] waypoints;
 
         [Header("Private")]
         [SerializeField] private HunterBlackboard blackboard; // the blackboard used to pass info to the behavior tree during updates
@@ -52,14 +53,12 @@ namespace SimpleBehaviorTree.Examples
         private void Awake()
         {
             parent = parent != null ? parent : parent.transform.parent.gameObject; // Making sure it always has a parent
+            position = transform.position; // Sets start position
         }
         private void Start()
         {
             // init blackboard
             blackboard = new HunterBlackboard();
-
-            // Sets start position
-            position = transform.position;
 
             // prepare behavior tree
             tree = new BehaviorTree(BuildTree1(), blackboard, BlackboardUpdater) { Name = "SimpleTree" };
@@ -131,6 +130,14 @@ namespace SimpleBehaviorTree.Examples
                             .Condition("InPursueRange", InPursueRangeOnly)
                         .End()
                     .End()
+                    
+                    .Sequence("Follow Path")
+                        .Condition("CanFollowPath", CanFollowPath)
+                        .Do("ToFollowPath", ToFollowPath)
+                        .RepeatUntilFailure("RepeatUntilFailure")
+                            .Condition("CanFollowPath", CanFollowPath)
+                        .End()
+                    .End()
 
                     .Sequence("Idle")
                         .Do("ToIdle", ToIdle)
@@ -139,20 +146,16 @@ namespace SimpleBehaviorTree.Examples
                         .End()
                     .End()
 
-                    .Sequence("Follow Path")
-                        .Condition("CanFollowPath", CanFollowPath)
-                        .Do("ToFollowPath", ToFollowPath)
-                        .RepeatUntilFailure("RepeatUntilFailure")
-                            .Condition("CanFollowPath", CanFollowPath)
-                        .End()
-                    .End()
                 .Build();
         }
 
         private void BlackboardUpdater(Blackboard bb)
         {
             // update distance to target
-            (blackboard as HunterBlackboard).distanceToTarget = (target.transform.position - transform.position).magnitude;
+            if (target)
+                (blackboard as HunterBlackboard).distanceToTarget = (target.transform.position - transform.position).magnitude;
+            else
+                (blackboard as HunterBlackboard).distanceToTarget = Mathf.Infinity;
         }
 
         //------------------------------------------------------------------------------------------
@@ -251,6 +254,16 @@ namespace SimpleBehaviorTree.Examples
 
         private NodeState ToFollowPath(Blackboard bb)
         {
+            SetBehaviors(
+                new IBehavior[]
+                {
+                    new Steering.FollowPath(waypoints)
+                },
+                "Follow Path"
+            );
+
+            Debug.Log("ok");
+
             return NodeState.SUCCESS;
         }
         #endregion
