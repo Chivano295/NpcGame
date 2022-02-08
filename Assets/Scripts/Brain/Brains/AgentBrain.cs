@@ -15,8 +15,9 @@ namespace SimpleBehaviorTree.Examples
     {
         [SerializeField] private BehaviorTree tree; // the behavior tree
 
-        [Header("Target")]
+        [Header("Object Settings")]
         public GameObject target; // our target object
+        public GameObject parent; // The parent from the agent
 
         [Header("Private")]
         [SerializeField] private HunterBlackboard blackboard; // the blackboard used to pass info to the behavior tree during updates
@@ -27,9 +28,9 @@ namespace SimpleBehaviorTree.Examples
         [SerializeField] private GenericSteering settings; // de steering settings for all behaviour
 
         [Header("Steering runtime")]
-        [SerializeField] private Vector3 position = Vector3.zero; // current position       
-        [SerializeField] private Vector3 velocity = Vector3.zero; // current velocity      
-        [SerializeField] private Vector3 steerfor = Vector3.zero; //steering force
+        public Vector3 position = Vector3.zero; // current position       
+        public Vector3 velocity = Vector3.zero; // current velocity      
+        public Vector3 steerfor = Vector3.zero; //steering force
 
         private IBehavior[] behaviors = { }; // all behaviors for this steering object
 
@@ -47,6 +48,11 @@ namespace SimpleBehaviorTree.Examples
         //------------------------------------------------------------------------------------------
         // Unity overrides
         //------------------------------------------------------------------------------------------
+
+        private void Awake()
+        {
+            parent = parent != null ? parent : parent.transform.parent.gameObject; // Making sure it always has a parent
+        }
         private void Start()
         {
             // init blackboard
@@ -192,7 +198,8 @@ namespace SimpleBehaviorTree.Examples
                 {
                     new Steering.Seek(target),
                     new Steering.AvoidObstacle(),
-                    new Steering.AvoidWall()
+                    new Steering.AvoidWall(),
+                    new Steering.Flock(parent)
                 },
                 "Approach w/ avoids"
             );
@@ -207,7 +214,8 @@ namespace SimpleBehaviorTree.Examples
                 {
                     new Steering.Pursue(target),
                     new Steering.AvoidObstacle(),
-                    new Steering.AvoidWall()
+                    new Steering.AvoidWall(),
+                    new Steering.Flock(parent)
                 },
                 "Pursue w/ avoids"
             );
