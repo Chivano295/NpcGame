@@ -13,12 +13,15 @@ MonoBehaviour:
   m_Name: Generic steering
   m_EditorClassIdentifier: 
   mass: 30
-  maxDesiredVelocity: 3
+  maxDesiredVelocity: 20
   maxSteeringforce: 3
-  maxSpeed: 2
+  maxSpeed: 4
   arriveDistance: 2
   slowingDistance: 4
   lookAheadTime: 1
+  pursueRadius: 5
+  approachRadius: 100
+  attackRadius: 4
   wanderCircleDistance: 10
   wanderCircleRadius: 5
   wanderNoiseAngle: 50
@@ -26,13 +29,13 @@ MonoBehaviour:
   avoidMaxForce: 90
   wallLayer: EPic
   obstacleLayer: EPic
-  flockLayer: 
-  flockAlignmentWeight: 0
-  flockCohesionWeight: 0
-  flockAlignmentRadius: 0
-  flockCohesionRadius: 0
-  flockSeparationWeight: 0
-  flockSeparationRadius: 0
-  flockVisibilityAngle: 0
+  flockLayer: coolio
+  flockAlignmentWeight: 7
+  flockCohesionWeight: 7
+  flockAlignmentRadius: 9e+9
+  flockCohesionRadius: 9e+9
+  flockSeparationWeight: 15
+  flockSeparationRadius: 7
+  flockVisibilityAngle: 180
   hideLayer: 
   hideOffset: 0
