@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+using SimpleBehaviorTree.Examples;
+
 namespace Steering
 {
     public class Flock : Behavior 
@@ -39,6 +41,8 @@ namespace Steering
         {
             // find all neighbors
             Collider[] neighbors = Physics.OverlapSphere(context.position, largestRadius, flockLayer, QueryTriggerInteraction.Ignore);
+
+            Debug.Log(neighbors.Length);
             if (neighbors.Length == 0)
                 return Vector3.zero;
 
@@ -51,14 +55,17 @@ namespace Steering
             foreach (Collider neighbor in neighbors)
             {
                 // skip this agent
-                if (neighbor == myCollider)
+                //if (neighbor == myCollider)
+                //    continue;
+
+                if (neighbor.gameObject.layer != flockLayer)
                     continue;
 
                 // get steering component from neighbor (if any)
-                Steering neighborSteering = neighbor.gameObject.GetComponent<Steering>();
+                AgentBrain neighborSteering = neighbor.gameObject.GetComponent<AgentBrain>();
                 if (neighborSteering == null)
                 {
-                    Debug.LogError($"ERROR: Flock Behavior found neighbor in layer {context.settings.flockLayer} without Steering script!");
+                    Debug.LogError($"ERROR: Flock Behavior found neighbor in layer {context.settings.flockLayer} without AgentBrain script!");
                     continue;
                 }
 
