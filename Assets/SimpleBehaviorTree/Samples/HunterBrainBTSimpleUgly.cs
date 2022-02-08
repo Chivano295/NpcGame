@@ -9,7 +9,7 @@ using UnityEngine;
 namespace SimpleBehaviorTree.Examples
 {
     class HunterBlackboardSimpleUgly : Blackboard {
-        public float m_distanceToTarget = 0.0f;
+        public float distanceToTarget = 0.0f;
     }
 
     public class HunterBrainBTSimpleUgly : MonoBehaviour
@@ -68,7 +68,7 @@ namespace SimpleBehaviorTree.Examples
         }
 
         private void BlackboardUpdater(Blackboard bb) {
-            (m_blackboard as HunterBlackboardSimpleUgly).m_distanceToTarget=(target.transform.position - transform.position).magnitude;
+            (m_blackboard as HunterBlackboardSimpleUgly).distanceToTarget=(target.transform.position - transform.position).magnitude;
         }
 
         /*
@@ -97,14 +97,14 @@ namespace SimpleBehaviorTree.Examples
         }
 
         private bool InApproachRange(Blackboard bb)
-        { return (bb as HunterBlackboard).m_distanceToTarget < appraoch_radius;
+        { return (bb as HunterBlackboard).distanceToTarget < appraoch_radius;
         }
 
 
 
         private bool InPursueRange(Blackboard bb)
         {
-            return (bb as HunterBlackboard).m_distanceToTarget < pursueRadius; }
+            return (bb as HunterBlackboard).distanceToTarget < pursueRadius; }
 
 
 

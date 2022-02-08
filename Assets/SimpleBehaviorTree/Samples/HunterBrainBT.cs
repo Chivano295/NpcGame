@@ -8,7 +8,7 @@ namespace SimpleBehaviorTree.Examples
     /// </summary>
     class HunterBlackboard : Blackboard
     {
-        public float m_distanceToTarget = 0.0f;
+        public float distanceToTarget = 0.0f;
     }
 
     /// <summary>
@@ -177,7 +177,7 @@ namespace SimpleBehaviorTree.Examples
         private void BlackboardUpdater(Blackboard bb)
         {
             // update distance to target
-            (m_blackboard as HunterBlackboard).m_distanceToTarget = (m_target.transform.position - transform.position).magnitude;
+            (m_blackboard as HunterBlackboard).distanceToTarget = (m_target.transform.position - transform.position).magnitude;
         }
 
         //------------------------------------------------------------------------------------------
@@ -202,7 +202,7 @@ namespace SimpleBehaviorTree.Examples
         /// <returns>True if the target is within approach range.</returns>
         private bool InApproachRange(Blackboard bb)
         {
-            return (bb as HunterBlackboard).m_distanceToTarget < m_approachRadius;
+            return (bb as HunterBlackboard).distanceToTarget < m_approachRadius;
         }
 
         /// <summary>
@@ -212,7 +212,7 @@ namespace SimpleBehaviorTree.Examples
         /// <returns>True if the target is within pursue range.</returns>
         private bool InPursueRange(Blackboard bb)
         {
-            return (bb as HunterBlackboard).m_distanceToTarget < m_pursueRadius;
+            return (bb as HunterBlackboard).distanceToTarget < m_pursueRadius;
         }
 
         /// <summary>
