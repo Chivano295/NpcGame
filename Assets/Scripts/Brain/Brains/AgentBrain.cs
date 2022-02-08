@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using Steering;
-using SimpleBehaviorTree.Examples;
 
 namespace SimpleBehaviorTree.Examples
 {
@@ -14,28 +13,36 @@ namespace SimpleBehaviorTree.Examples
 
     public class AgentBrain : MonoBehaviour
     {
-        [SerializeField]
-        private BehaviorTree tree;                    // the behavior tree
+        [SerializeField] private BehaviorTree tree; // the behavior tree
 
         [Header("Target")]
-        public GameObject target;                  // our target object
-        public float pursueRadius = 7.0f; // the pursue radius in m
-        public float approachRadius = 10.0f; // the approach radius in m (must be larger than pursue radius)
-        public float attackRadius = 2;
-
-        [Header("Steering Settings")]
-        public float approachSpeed = 1.0f; // the approach speed in m/s  
-        public float pursueSpeed = 2.0f; // the pursue speed in m/s
-        public float followSpeed = 1.5f;
-        public float rotationSpeed = 10.0f; // rotaton speed in degrees/s
-        public bool doNotMove = true;  // set to true to prevent the NPC from moving (debug option)
-
-        [Header("Feedback")]
-        private float activeSpeed = 0.0f;  // the active speed in m/s
-        private string state = "-";   // string that provides feedback on the current state
+        public GameObject target; // our target object
 
         [Header("Private")]
-        private HunterBlackboard blackboard;              // the blackboard used to pass info to the behavior tree during updates
+        [SerializeField] private HunterBlackboard blackboard; // the blackboard used to pass info to the behavior tree during updates
+        [SerializeField] private bool doNotMove = false; // set to true to prevent the NPC from moving (debug option)
+
+        [Header("Steering settings")]
+        [SerializeField] private string label; // label to show when running
+        [SerializeField] private GenericSteering settings; // de steering settings for all behaviour
+
+        [Header("Steering runtime")]
+        [SerializeField] private Vector3 position = Vector3.zero; // current position       
+        [SerializeField] private Vector3 velocity = Vector3.zero; // current velocity      
+        [SerializeField] private Vector3 steerfor = Vector3.zero; //steering force
+
+        private IBehavior[] behaviors = { }; // all behaviors for this steering object
+
+        void SetBehaviors(IBehavior[] behavior, string lab)
+        {
+            //remember new settings
+            behaviors = behavior;
+            label = lab;
+
+            //Start all behaviours
+            foreach (IBehavior behav in behavior)
+                behav.Start(new BehaviorContext(position, velocity, settings));
+        }
 
         //------------------------------------------------------------------------------------------
         // Unity overrides
@@ -45,35 +52,45 @@ namespace SimpleBehaviorTree.Examples
             // init blackboard
             blackboard = new HunterBlackboard();
 
+            // Sets start position
+            position = transform.position;
+
             // prepare behavior tree
             tree = new BehaviorTree(BuildTree1(), blackboard, BlackboardUpdater) { Name = "SimpleTree" };
         }
 
-        void Update()
+        private void FixedUpdate()
         {
-            // calculate target direction and desired velocity
-            Vector3 targetDirection = target.transform.position - transform.position;
-            Vector3 desiredVelocity = targetDirection.normalized * activeSpeed;
+            steerfor = Vector3.zero;
 
-            // update position and rotation
-            transform.position = transform.position + desiredVelocity * Time.deltaTime;
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(targetDirection), rotationSpeed * Time.deltaTime);
-            transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
+            foreach (IBehavior behavior in behaviors)
+                steerfor += behavior.CalculateSteeringForce(Time.fixedDeltaTime, new BehaviorContext(position, velocity, settings));
 
-            // update the behavior tree
+            steerfor.y = 0f;
+            steerfor = Vector3.ClampMagnitude(steerfor, settings.maxSteeringforce);
+            steerfor /= settings.mass;
+
+            velocity = Vector3.ClampMagnitude(velocity + steerfor, settings.maxSpeed);
+
+            position += velocity * Time.fixedDeltaTime;
+
+            transform.position = doNotMove != true ? position : transform.position;
+            transform.LookAt(position + Time.fixedDeltaTime * velocity);
+
             tree.Update(Time.deltaTime);
         }
 
         private void OnDrawGizmos()
         {
-#if UNITY_EDITOR
-            UnityEditor.Handles.color = Color.cyan;
-            UnityEditor.Handles.DrawWireDisc(transform.position, Vector3.up, approachRadius);
-            UnityEditor.Handles.DrawWireDisc(transform.position, Vector3.up, pursueRadius);
-            UnityEditor.Handles.BeginGUI();
-            UnityEditor.Handles.Label(transform.position, $"{state} (speed = {activeSpeed})");
-            UnityEditor.Handles.EndGUI();
-#endif
+            Support.DrawWireDisc(transform.position, settings.approachRadius, Color.cyan);
+            Support.DrawWireDisc(transform.position, settings.pursueRadius,   Color.cyan);
+
+            Support.DrawRay(transform.position, velocity, Color.red);
+
+            Support.DrawLabel(transform.position, label, Color.green);
+
+            foreach (IBehavior behavior in behaviors)
+                behavior.OnDrawGizmos(new BehaviorContext(position, velocity, settings));
         }
 
         //------------------------------------------------------------------------------------------
@@ -144,7 +161,7 @@ namespace SimpleBehaviorTree.Examples
 
         private bool InApproachRange(Blackboard bb)
         {
-            return (bb as HunterBlackboard).distanceToTarget < approachRadius;
+            return (bb as HunterBlackboard).distanceToTarget < settings.approachRadius;
         }
 
         private bool InPursueRangeOnly(Blackboard bb)
@@ -154,12 +171,12 @@ namespace SimpleBehaviorTree.Examples
 
         private bool InPursueRange(Blackboard bb)
         {
-            return (bb as HunterBlackboard).distanceToTarget < pursueRadius;
+            return (bb as HunterBlackboard).distanceToTarget < settings.pursueRadius;
         }
 
         private bool InAttackRange(Blackboard bb)
         {
-            return (bb as HunterBlackboard).distanceToTarget < attackRadius;
+            return (bb as HunterBlackboard).distanceToTarget < settings.attackRadius;
         }
 
         private bool CanFollowPath(Blackboard bb)
@@ -170,36 +187,62 @@ namespace SimpleBehaviorTree.Examples
 
         private NodeState ToApproach(Blackboard bb)
         {
-            state = "Approach";
-            activeSpeed = approachSpeed;
+            SetBehaviors(
+                new IBehavior[]
+                {
+                    new Steering.Seek(target),
+                    new Steering.AvoidObstacle(),
+                    new Steering.AvoidWall()
+                },
+                "Approach w/ avoids"
+            );
+
             return NodeState.SUCCESS;
         }
 
         private NodeState ToPursue(Blackboard bb)
         {
-            state = "Pursue";
-            activeSpeed = pursueSpeed;
+            SetBehaviors(
+                new IBehavior[]
+                {
+                    new Steering.Pursue(target),
+                    new Steering.AvoidObstacle(),
+                    new Steering.AvoidWall()
+                },
+                "Pursue w/ avoids"
+            );
+
             return NodeState.SUCCESS;
         }
 
         private NodeState ToIdle(Blackboard bb)
         {
-            state = "Idle";
-            activeSpeed = 0.0f;
+            SetBehaviors(
+                new IBehavior[]
+                {
+                    new Steering.Idle(),
+                },
+                "Idle"
+            );
+
             return NodeState.SUCCESS;
         }
 
         private NodeState ToAttack(Blackboard bb)
         {
-            state = "Attack";
-            activeSpeed = 0;
+            SetBehaviors(
+                new IBehavior[]
+                {
+                    new Steering.Idle(),
+                },
+                "Attack"
+            );
+
             return NodeState.SUCCESS;
         }
 
         private NodeState ToFollowPath(Blackboard bb)
         {
-            state = "FollowPath";
-            activeSpeed = followSpeed;
             return NodeState.SUCCESS;
         }
         #endregion

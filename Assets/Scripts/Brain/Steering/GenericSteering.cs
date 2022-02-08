@@ -15,8 +15,15 @@ public class GenericSteering : ScriptableObject
     public float arriveDistance = 1f; // distance from target when you reach zero velocity
     public float slowingDistance = 2.0f; //distance from object where we Start slowing down
 
-    [Header("Persuit and Evade")]
-    public float lookAheadTime = 1.0f; 
+    [Header("Pursue and Evade")]
+    public float lookAheadTime = 1.0f;
+    public float pursueRadius = 7;
+
+    [Header("Approach")]
+    public float approachRadius = 10;
+
+    [Header("Attack")]
+    public float attackRadius = 4;
 
     [Header("Wander")]
     public float wanderCircleDistance = 5f; //distance

@@ -16,10 +16,9 @@ namespace Steering
             
         }
 
-        public Pursue(GameObject target)
+        public Pursue(GameObject targ)
         {
-            target = target;
-            
+            target = targ;
         }
 
 

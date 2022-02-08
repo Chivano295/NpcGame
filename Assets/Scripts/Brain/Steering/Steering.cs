@@ -12,7 +12,7 @@ namespace Steering
         public GenericSteering settings; // de steering settings for all behaviour
 
         [Header("Steering runtime")]
-        public Vector3 position = Vector3.zero;// current position       
+        public Vector3 position = Vector3.zero; // current position       
         public Vector3 velocity = Vector3.zero; // current velocity      
         public Vector3 steering = Vector3.zero; //steering force
         public BehaviorList behaviors = new BehaviorList(); // all behaviors for this steering object
