@@ -17,7 +17,7 @@ namespace SimpleBehaviorTree.Examples
 
         [Header("Object Settings")]
         public GameObject target; // our target object
-        public GameObject parent; // The parent from the agent
+        public GameObject father; // The parent from the agent
         public GameObject[] waypoints;
 
         [Header("Private")]
@@ -52,7 +52,8 @@ namespace SimpleBehaviorTree.Examples
 
         private void Awake()
         {
-            parent = parent != null ? parent : parent.transform.parent.gameObject; // Making sure it always has a parent
+            father = father != null ? father : father.transform.parent.parent.gameObject; // Making sure it always has a parent
+            print(father);
             position = transform.position; // Sets start position
         }
         private void Start()
@@ -190,7 +191,10 @@ namespace SimpleBehaviorTree.Examples
 
         private bool CanFollowPath(Blackboard bb)
         {
-            return true;
+            if (waypoints.Length > 0)
+                return true;
+            else
+                return false;
         }
 
 
@@ -202,7 +206,7 @@ namespace SimpleBehaviorTree.Examples
                     new Steering.Seek(target),
                     new Steering.AvoidObstacle(),
                     new Steering.AvoidWall(),
-                    new Steering.Flock(parent)
+                    new Steering.Flock(father)
                 },
                 "Approach w/ avoids"
             );
@@ -218,7 +222,7 @@ namespace SimpleBehaviorTree.Examples
                     new Steering.Pursue(target),
                     new Steering.AvoidObstacle(),
                     new Steering.AvoidWall(),
-                    new Steering.Flock(parent)
+                    new Steering.Flock(father)
                 },
                 "Pursue w/ avoids"
             );
