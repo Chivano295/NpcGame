@@ -14,6 +14,9 @@ public class Selection : MonoBehaviour
     [Header("Env")]
     [SerializeField] private GameObject agents;
 
+    [Header("Epic")]
+    public List<GameObject> SelectedAgents = new List<GameObject>();
+
     void Update()
     {
         BoxSelection();
@@ -61,19 +64,35 @@ public class Selection : MonoBehaviour
     void ButtonReleased()
     {
         if ((holdPos - movePos).magnitude <= 15)
+        {
+            SingularSelect();
             return;
+        }
+
+        SelectedAgents = new List<GameObject>();
 
         foreach (Transform agent in GetAgents())
         {
             Vector3 screenPos = Camera.main.WorldToScreenPoint(agent.position);
 
-            if (IsInBox(screenPos))
-                agent.GetComponent<Renderer>().material.color = Color.green;
-            else
-                agent.GetComponent<Renderer>().material.color = Color.red;
+            if (!agent.GetComponent<TeamBlue>())
+                continue;
+            else if (IsInBox(screenPos))
+                SelectedAgents.Add(agents.gameObject);
         }
     }
 
+    void SingularSelect()
+    {
+        Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(mouseRay, out hit, 100))
+            if (hit.transform.GetComponent<TeamBlue>())
+                SelectedAgents = new List<GameObject>() { hit.transform.gameObject };
+            else
+                SelectedAgents.Clear();
+    }
 
     private void OnGUI()
     {

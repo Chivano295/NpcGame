@@ -16,10 +16,9 @@ namespace Steering
             
         }
 
-        public Evade(GameObject target)
+        public Evade(GameObject targ)
         {
-            target = target;
-            
+            target = targ;
         }
 
 
