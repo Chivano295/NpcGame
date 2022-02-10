@@ -23,6 +23,7 @@ public class Currency : MonoBehaviour
     public void BuyEnemy()
     {
         currency = currency - 10;
+
     }
     public void OpenShop()
     {
@@ -34,5 +35,6 @@ public class Currency : MonoBehaviour
         openShop.SetActive(false);
         openbutton.SetActive(true);
     }
+
 
 }
