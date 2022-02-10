@@ -4,6 +4,20 @@ using UnityEngine;
 
 public class Support : MonoBehaviour
 {
+    static Texture2D _whiteTexture;
+
+    public static Texture2D WhiteTexture
+    {
+        get
+        {
+            _whiteTexture = new Texture2D(1, 1);
+            _whiteTexture.SetPixel(0, 0, Color.white);
+            _whiteTexture.Apply();
+
+            return _whiteTexture;
+        }
+    }
+
     public static void DrawRay(Vector3 position, Vector3 direction, Color color)
     {
         if (direction.sqrMagnitude <= 0.001f)
@@ -47,5 +61,33 @@ public class Support : MonoBehaviour
 
         UnityEditor.Handles.color = color;
         UnityEditor.Handles.DrawSolidDisc(position, Vector3.up, radius);
+    }
+
+
+    // Used https://github.com/pickles976/RTS_selection/blob/master/Utils.cs functions for drawing a Selection Box
+    static public void DrawScreenRect(Rect rect, Color color)
+    {
+        GUI.color = color;
+        GUI.DrawTexture(rect, WhiteTexture);
+        GUI.color = Color.white;
+    }
+
+    public static void DrawScreenRectBorder(Rect rect, float thickness, Color color)
+    {
+        DrawScreenRect(new Rect(rect.xMin, rect.yMin, rect.width, thickness), color);
+        DrawScreenRect(new Rect(rect.xMin, rect.yMin, thickness, rect.height), color);
+        DrawScreenRect(new Rect(rect.xMax - thickness, rect.yMin, thickness, rect.height), color);
+        DrawScreenRect(new Rect(rect.xMin, rect.yMax - thickness, rect.width, thickness), color);
+    }
+
+    public static Rect GetScreenRect(Vector3 screenPosition0, Vector3 screenPosition1)
+    {
+        screenPosition0.y = Screen.height - screenPosition0.y;
+        screenPosition1.y = Screen.height - screenPosition1.y;
+
+        var topLeft     = Vector3.Min(screenPosition0, screenPosition1);
+        var bottomRight = Vector3.Max(screenPosition0, screenPosition1);
+
+        return Rect.MinMaxRect(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
     }
 }
