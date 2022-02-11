@@ -46,11 +46,13 @@ namespace SimpleBehaviorTree.Examples
 
         private void OnDrawGizmos()
         {
-           UnityEditor.Handles.color=Color.cyan;
+#if UNITY_EDITOR
+            UnityEditor.Handles.color=Color.cyan;
          UnityEditor.Handles.DrawWireDisc(transform.position,Vector3.up,appraoch_radius);  UnityEditor.Handles.DrawWireDisc(transform.position,Vector3.up,pursueRadius);
           UnityEditor.Handles.BeginGUI();
            UnityEditor.Handles.Label(transform.position, $"{state} (speed = {cur_speed})");
      UnityEditor.Handles.EndGUI();
+#endif
         }
 
         private RootNode BuildTree1() {
