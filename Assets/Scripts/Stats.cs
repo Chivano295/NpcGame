@@ -1,20 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Stats : MonoBehaviour
 {
-    [SerializeField]
-    int StarterHp = 100;
-    [SerializeField]
-    int Health = 100;
-    [SerializeField]
-    int Damage = 30;
+    public int health = 100;
+    public int currentHealth;
+    public int damage = 34;
+    public TextMeshProUGUI hp;
 
 
-    private void Start()
+    public void Start()
     {
-        StarterHp = Health;
+        currentHealth = health;
     }
 
+    public void Update()
+    {
+        hp.text = "hp =" + currentHealth;
+    }
+    public void TakeDamage()
+    {
+        currentHealth = currentHealth - damage;
+
+
+        if (currentHealth <= 0)
+        {
+            gameObject.SetActive(false);
+        }
+    }
 }
