@@ -53,6 +53,7 @@ namespace SimpleBehaviorTree.Examples
                 new IBehavior[]
                 {
                     new Steering.Arrive(position),
+                    new Steering.Flock(father)
                 },
                 "Follow Path"
             );
