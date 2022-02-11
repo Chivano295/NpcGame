@@ -4,6 +4,7 @@ using UnityEngine;
 
 using Steering;
 
+
 namespace SimpleBehaviorTree.Examples
 {
     class HunterBlackboardBrain : Blackboard
@@ -46,6 +47,17 @@ namespace SimpleBehaviorTree.Examples
                 behav.Start(new BehaviorContext(position, velocity, settings));
         }
 
+        public void ForceWalk(Vector3 position)
+        {
+            SetBehaviors(
+                new IBehavior[]
+                {
+                    new Steering.Arrive(position),
+                },
+                "Follow Path"
+            );
+        }
+
         //------------------------------------------------------------------------------------------
         // Unity overrides
         //------------------------------------------------------------------------------------------
@@ -53,9 +65,9 @@ namespace SimpleBehaviorTree.Examples
         private void Awake()
         {
             father = father != null ? father : this.transform.parent.parent.gameObject; // Making sure it always has a parent
-            print(father);
             position = transform.position; // Sets start position
         }
+
         private void Start()
         {
             // init blackboard
@@ -205,8 +217,6 @@ namespace SimpleBehaviorTree.Examples
                 {
                     new Steering.Seek(target),
                     new Steering.AvoidObstacle(),
-                    new Steering.AvoidWall(),
-                    new Steering.Flock(father)
                 },
                 "Approach w/ avoids"
             );
@@ -220,9 +230,7 @@ namespace SimpleBehaviorTree.Examples
                 new IBehavior[]
                 {
                     new Steering.Pursue(target),
-                    new Steering.AvoidObstacle(),
-                    new Steering.AvoidWall(),
-                    new Steering.Flock(father)
+                    new Steering.AvoidObstacle()
                 },
                 "Pursue w/ avoids"
             );
