@@ -18,7 +18,7 @@ public class Stats : MonoBehaviour
 
     public void Update()
     {
-        hp.text = "hp =" + currentHealth;
+        hp.text = "hp = " + currentHealth;
     }
     public void TakeDamage()
     {
