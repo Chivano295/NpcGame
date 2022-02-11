@@ -52,7 +52,7 @@ namespace SimpleBehaviorTree.Examples
 
         private void Awake()
         {
-            father = father != null ? father : father.transform.parent.parent.gameObject; // Making sure it always has a parent
+            father = father != null ? father : this.transform.parent.parent.gameObject; // Making sure it always has a parent
             print(father);
             position = transform.position; // Sets start position
         }
