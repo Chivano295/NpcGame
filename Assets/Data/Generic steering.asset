@@ -16,8 +16,8 @@ MonoBehaviour:
   maxDesiredVelocity: 20
   maxSteeringforce: 3
   maxSpeed: 4
-  arriveDistance: 2
-  slowingDistance: 4
+  arriveDistance: 0.5
+  slowingDistance: 3
   lookAheadTime: 1
   pursueRadius: 5
   approachRadius: 100
