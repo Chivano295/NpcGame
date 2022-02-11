@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-using SimpleBehaviorTree.Examples;
-
 public class Selection : MonoBehaviour
 {
     [Header("Box Settings")]
@@ -22,7 +20,6 @@ public class Selection : MonoBehaviour
     void Update()
     {
         BoxSelection();
-        MoveAgents();
     }
 
     void BoxSelection()
@@ -39,28 +36,6 @@ public class Selection : MonoBehaviour
             movePos = Input.mousePosition;
 
         mouseDown = mouseTwo;
-    }
-
-    void MoveAgents()
-    {
-        if (!Input.GetKeyDown(KeyCode.Space))
-            return;
-
-        Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-        Physics.Raycast(mouseRay, out hit, 99999);
-
-        float sqrt = Mathf.Sqrt(SelectedAgents.Count);
-
-        for (int i = 0; i < SelectedAgents.Count; i++)
-        {
-            GameObject agent = SelectedAgents[i];
-
-            Vector3 position = new Vector3(sqrt % i / sqrt, 0, sqrt % i / sqrt);
-
-            agent.GetComponent<AgentBrain>().ForceWalk(position);
-        }
     }
 
     List<Transform> GetAgents() // Very ugly but whatever, it works ig :P
@@ -86,12 +61,6 @@ public class Selection : MonoBehaviour
         return false;
     }
 
-    void Highlight(bool enabled)
-    {
-        foreach (GameObject agent in SelectedAgents)
-            agent.GetComponent<Outline>().enabled = enabled;
-    }
-
     void ButtonReleased()
     {
         if ((holdPos - movePos).magnitude <= 15)
@@ -99,8 +68,6 @@ public class Selection : MonoBehaviour
             SingularSelect();
             return;
         }
-
-        Highlight(false);
 
         SelectedAgents = new List<GameObject>();
 
@@ -111,10 +78,8 @@ public class Selection : MonoBehaviour
             if (!agent.GetComponent<TeamBlue>())
                 continue;
             else if (IsInBox(screenPos))
-                SelectedAgents.Add(agent.gameObject);
+                SelectedAgents.Add(agents.gameObject);
         }
-
-        Highlight(true);
     }
 
     void SingularSelect()
@@ -122,15 +87,11 @@ public class Selection : MonoBehaviour
         Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
-        Highlight(false);
-
-        if (Physics.Raycast(mouseRay, out hit, 99999))
+        if (Physics.Raycast(mouseRay, out hit, 100))
             if (hit.transform.GetComponent<TeamBlue>())
                 SelectedAgents = new List<GameObject>() { hit.transform.gameObject };
             else
                 SelectedAgents.Clear();
-
-        Highlight(true);
     }
 
     private void OnGUI()
