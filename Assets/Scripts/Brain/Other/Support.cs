@@ -25,42 +25,50 @@ public class Support : MonoBehaviour
 
         //draw ray with solid disk at end
         Debug.DrawRay(position, direction, color);
+#if UNITY_EDITOR
         UnityEditor.Handles.color = color;
         UnityEditor.Handles.DrawSolidDisc(position + direction, Vector3.up, 0.25f);
+#endif
     }
 
     static public void DrawLine(Vector3 from, Vector3 to, Color color)
     {
         Debug.DrawLine(from, to, color);
+#if UNITY_EDITOR
         UnityEditor.Handles.color = color;
         UnityEditor.Handles.DrawSolidDisc(from + (to - from), Vector3.up, 0.25f);
+#endif
     }
 
     public static void DrawLabel(Vector3 position, string label, Color color)
     {
         //draw alabel at a certain position with color
+#if UNITY_EDITOR
         UnityEditor.Handles.BeginGUI();
         UnityEditor.Handles.color = color;
         UnityEditor.Handles.Label(position, label);
         UnityEditor.Handles.EndGUI();
+#endif
     }
 
     public static void DrawWireDisc(Vector3 position, float radius, Color color)
     {
         if (radius <= 0)
             return;
-
+#if UNITY_EDITOR
         UnityEditor.Handles.DrawWireDisc(position, Vector3.up, radius);
         UnityEditor.Handles.color = color;
+#endif
     }
 
     static public void DrawSolidDisc(Vector3 position, float radius, Color color)
     {
         if (radius <= 0)
             return;
-
+#if UNITY_EDITOR
         UnityEditor.Handles.color = color;
         UnityEditor.Handles.DrawSolidDisc(position, Vector3.up, radius);
+#endif
     }
 
 
