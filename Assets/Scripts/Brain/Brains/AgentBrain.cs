@@ -17,8 +17,8 @@ namespace SimpleBehaviorTree.Examples
         [SerializeField] private BehaviorTree tree; // the behavior tree
 
         [Header("Object Settings")]
-        public GameObject target; // our target object
-        public GameObject father; // The parent from the agent
+        public GameObject   target; // our target object
+        public GameObject   father; // The parent from the agent
         public GameObject[] waypoints;
 
         [Header("Private")]
@@ -61,12 +61,28 @@ namespace SimpleBehaviorTree.Examples
         #region Unit Stats
 
         [Header("Unit Stats")]
-        public int hp;
-        public int defense;
-        public int moveSpeed;
-        public int attackDamage;
-        public int attackSpeed;
-        public int viewRange;
+        public int attackDamage = 20;
+        public int attackSpeed  = 1;
+        public int moveSpeed    = 16;
+        public int viewRange    = 20;
+        public int defense      = 50;
+        public int hp           = 100;
+
+        void Die()
+        {
+            print("Death");
+        }
+
+        public void TakeDamage(int damage)
+        {
+            int newDamage = damage - defense;
+
+            defense = newDamage <= 0 ? newDamage : 0;
+            hp = newDamage > 0 ? hp - newDamage : hp;
+
+            if (hp <= 0)
+                Die();
+        }
 
         #endregion
 

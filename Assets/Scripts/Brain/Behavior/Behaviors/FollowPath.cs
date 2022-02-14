@@ -8,7 +8,6 @@ namespace Steering
     public class FollowPath : Behavior
     {
         private GameObject[] waypointList;
-        private string waypointTag = "Waypoint";
         private int waypointIndex = 0;
         private float waypointRadius = 2.5f;
 
@@ -20,7 +19,6 @@ namespace Steering
         {
             base.Start(context);
             //initialize things for behavior here
-            
         }
 
 

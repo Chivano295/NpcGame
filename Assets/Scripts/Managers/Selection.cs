@@ -24,10 +24,13 @@ public class Selection : MonoBehaviour
     void Update()
     {
         BoxSelection();
+
+        /* Unusable :(
         MoveAgents();
 
         if (Input.GetKey(KeyCode.Space) && PreviewExists())
             MovePreview();
+        */
     }
 
     void BoxSelection()
@@ -44,79 +47,6 @@ public class Selection : MonoBehaviour
             movePos = Input.mousePosition;
 
         mouseDown = mouseTwo;
-    }
-
-    void MoveAgents()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        { 
-            Preview(true, true);
-            return;
-        }
-        else if (!Input.GetKeyUp(KeyCode.Space))
-            return;
-
-        Preview(false, false);
-
-        Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-        Physics.Raycast(mouseRay, out hit, 99999);
-
-        int sqrt = Mathf.CeilToInt(Mathf.Sqrt(SelectedAgents.Count));
-
-        for (int x = 0; x < sqrt; x++)
-            for (int y = 0; y < sqrt; y++)
-            {
-                if (SelectedAgents.Count <= x * sqrt + y)
-                    break;
-
-                SelectedAgents[x * sqrt + y].GetComponent<AgentBrain>().ForceWalk(
-                    hit.point + new Vector3(-sqrt / 2 + y, 0, -sqrt / 2 + x)
-                );
-            }
-    }
-
-    bool PreviewExists()
-    {
-        return previewFather.childCount > 0;
-    }
-
-    void Preview(bool newPreview, bool enabled)
-    {
-        if (newPreview)
-        {
-            for (int i = 0; i < previewFather.childCount; i++)
-                Destroy(previewFather.GetChild(i).gameObject);
-
-            for (int i = 0; i < SelectedAgents.Count; i++)
-                Instantiate(previewPrefab, Vector3.zero, Quaternion.identity, previewFather);
-        }
-
-        previewFather.gameObject.SetActive(enabled);
-
-        MovePreview();
-    }
-
-    void MovePreview()
-    {
-        Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-        Physics.Raycast(mouseRay, out hit, 99999);
-
-        int sqrt = Mathf.CeilToInt(Mathf.Sqrt(SelectedAgents.Count));
-
-        for (int x = 0; x < sqrt; x++)
-            for (int y = 0; y < sqrt; y++)
-            {
-                if (SelectedAgents.Count <= x * sqrt + y)
-                    break;
-
-                Transform agent = previewFather.GetChild(x * sqrt + y);
-
-                agent.position = hit.point + new Vector3(-sqrt / 2 + y, 1, -sqrt / 2 + x);
-            }
     }
 
     List<Transform> GetAgents() // Very ugly but whatever, it works ig :P
@@ -199,4 +129,80 @@ public class Selection : MonoBehaviour
         Support.DrawScreenRect(rect, new Color(0.8f, 0.8f, 0.8f, 0.15f));
         Support.DrawScreenRectBorder(rect, 1, Color.white);
     }
+
+
+    /* Unusable :(
+    void MoveAgents()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        { 
+            Preview(true, true);
+            return;
+        }
+        else if (!Input.GetKeyUp(KeyCode.Space))
+            return;
+
+        Preview(false, false);
+
+        Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        Physics.Raycast(mouseRay, out hit, 99999);
+
+        int sqrt = Mathf.CeilToInt(Mathf.Sqrt(SelectedAgents.Count));
+
+        for (int x = 0; x < sqrt; x++)
+            for (int y = 0; y < sqrt; y++)
+            {
+                if (SelectedAgents.Count <= x * sqrt + y)
+                    break;
+
+                SelectedAgents[x * sqrt + y].GetComponent<AgentBrain>().ForceWalk(
+                    hit.point + new Vector3(-sqrt / 2 + y, 0, -sqrt / 2 + x)
+                );
+            }
+    }
+
+    bool PreviewExists()
+    {
+        return previewFather.childCount > 0;
+    }
+
+    void Preview(bool newPreview, bool enabled)
+    {
+        if (newPreview)
+        {
+            for (int i = 0; i < previewFather.childCount; i++)
+                Destroy(previewFather.GetChild(i).gameObject);
+
+            for (int i = 0; i < SelectedAgents.Count; i++)
+                Instantiate(previewPrefab, Vector3.zero, Quaternion.identity, previewFather);
+        }
+
+        previewFather.gameObject.SetActive(enabled);
+
+        MovePreview();
+    }
+
+    void MovePreview()
+    {
+        Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        Physics.Raycast(mouseRay, out hit, 99999);
+
+        int sqrt = Mathf.CeilToInt(Mathf.Sqrt(SelectedAgents.Count));
+
+        for (int x = 0; x < sqrt; x++)
+            for (int y = 0; y < sqrt; y++)
+            {
+                if (SelectedAgents.Count <= x * sqrt + y)
+                    break;
+
+                Transform agent = previewFather.GetChild(x * sqrt + y);
+
+                agent.position = hit.point + new Vector3(-sqrt / 2 + y, 1, -sqrt / 2 + x);
+            }
+    }
+    */
 }

@@ -74,15 +74,15 @@ namespace Steering
             for (int i = 0; i < colliders.Count; i++)
             {
                 // calculate hiding place for the current obstacle and remember it so we can draw gizmos
-                Vector3 hidingPlace = CalculateHidingPlace(context, colliders[i], enemy_position);
-                hidingPlaces.Add(hidingPlace);
+                Vector3 hideplace = CalculateHidingPlace(context, colliders[i], enemy_position);
+                hidingPlaces.Add(hideplace);
 
                 // update closest hiding place if this hiding place is closer than the previous
-                float distanceToHidingPlaceSqr = (context.position - hidingPlace).sqrMagnitude;
+                float distanceToHidingPlaceSqr = (context.position - hideplace).sqrMagnitude;
                 if (distanceToHidingPlaceSqr < closestDistanceSqr)
                 {
                     closestDistanceSqr = distanceToHidingPlaceSqr; // we have a new closest point
-                    hidingPlace      = hidingPlace;              // remember it as the new hiding place
+                    hidingPlace        = hideplace;              // remember it as the new hiding place
                 }
             }
 

@@ -35,7 +35,8 @@ public class CameraMover : MonoBehaviour
         if (Input.GetAxis("Mouse ScrollWheel") < 0 && mainCamera.orthographicSize < 40)
             mainCamera.orthographicSize += 1;
 
-        moveDirection = moveDirection * Time.deltaTime * CameraSpeed;
+        moveDirection = moveDirection * Time.deltaTime;
+        moveDirection = Input.GetKey(KeyCode.Space) ? moveDirection * (CameraSpeed * 2) : moveDirection * CameraSpeed;
 
         position += moveDirection;
     }
