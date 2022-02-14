@@ -6,6 +6,12 @@ using SimpleBehaviorTree.Examples;
 
 public class SpawnManager : MonoBehaviour
 {
+    [Header("Enviorment")]
+    [SerializeField] private Transform unitFather;
+
+    [Header("Prefabs")]
+    [SerializeField] private GameObject unit;
+
     [Header("Unit Stats")]
     [SerializeField] private int hp = 0;
     [SerializeField] private int defense = 0;
@@ -13,9 +19,6 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private int attackDamage = 0;
     [SerializeField] private int attackSpeed = 0;
     [SerializeField] private int viewRange = 0;
-
-    [Header("Prefabs")]
-    [SerializeField] private GameObject unit;
 
     [Header("Private")]
     private List<GameObject> units = new List<GameObject>();
@@ -30,6 +33,9 @@ public class SpawnManager : MonoBehaviour
         yield return new WaitForSeconds(10);
 
         List<GameObject> newUnits = new List<GameObject>();
+
+        GameObject group = new GameObject("Unit Group");
+        group.transform.parent = unitFather;
 
         for (int i = 0; i < 10; i++)
         {
