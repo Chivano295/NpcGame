@@ -54,9 +54,21 @@ namespace SimpleBehaviorTree.Examples
                 {
                     new Steering.Arrive(position),
                 },
-                "Follow Path"
+                "Driven by God"
             );
         }
+
+        #region Unit Stats
+
+        [Header("Unit Stats")]
+        public int hp;
+        public int defense;
+        public int moveSpeed;
+        public int attackDamage;
+        public int attackSpeed;
+        public int viewRange;
+
+        #endregion
 
         //------------------------------------------------------------------------------------------
         // Unity overrides
