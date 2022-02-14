@@ -34,12 +34,12 @@ public class SpawnManager : MonoBehaviour
 
         List<GameObject> newUnits = new List<GameObject>();
 
-        GameObject group = new GameObject("Unit Group");
-        group.transform.parent = unitFather;
+        Transform group = new GameObject("Unit Group").transform;
+        group.parent = unitFather;
 
         for (int i = 0; i < 10; i++)
         {
-            GameObject newUnit = Instantiate(unit);
+            GameObject newUnit = Instantiate(unit, group);
 
             newUnits.Add(newUnit);
             units.Add(newUnit);
