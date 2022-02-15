@@ -20,6 +20,7 @@ namespace SimpleBehaviorTree.Examples
         public GameObject   target; // our target object
         public GameObject   father; // The parent from the agent
         public GameObject[] waypoints;
+        public bool         team;
 
         [Header("Private")]
         [SerializeField] private HunterBlackboard blackboard; // the blackboard used to pass info to the behavior tree during updates
@@ -32,7 +33,7 @@ namespace SimpleBehaviorTree.Examples
         [Header("Steering runtime")]
         public Vector3 position = Vector3.zero; // current position       
         public Vector3 velocity = Vector3.zero; // current velocity      
-        public Vector3 steerfor = Vector3.zero; //steering force
+        public Vector3 steerfor = Vector3.zero; // steering force
 
         private IBehavior[] behaviors = { }; // all behaviors for this steering object
 
@@ -58,6 +59,46 @@ namespace SimpleBehaviorTree.Examples
             );
         }
 
+        #region Custom functions
+
+        List<Transform> GetChildren(Transform parent)
+        {
+            List<Transform> children = new List<Transform>();
+
+            for (int i = 0; i < parent.childCount; i++)
+                children.Add(parent.GetChild(i));
+
+            return children;
+        }
+
+        float GetDistance(Transform a)
+        {
+            return Vector3.Distance(a.position, this.position);
+        }
+
+        Transform NearestEnemy()
+        {
+            Transform chosenOne = null;
+            float distance = 999;
+
+            foreach (Transform group in GetChildren(father.transform))
+            {
+                foreach (Transform unit in GetChildren(group))
+                {
+                    if (unit.GetComponent<MyTeam>().team == team)
+                        continue;
+
+                    float dist = GetDistance(unit);
+
+                    (distance, chosenOne) = dist < distance && unit != this.transform ? (dist, unit) : (distance, chosenOne);
+                }
+            }
+
+            return chosenOne;
+        }
+
+        #endregion
+
         #region Unit Stats
 
         [Header("Unit Stats")]
@@ -70,7 +111,7 @@ namespace SimpleBehaviorTree.Examples
 
         void Die()
         {
-            print("Death");
+            Destroy(this.gameObject);
         }
 
         public void TakeDamage(int damage)
@@ -82,6 +123,8 @@ namespace SimpleBehaviorTree.Examples
 
             if (hp <= 0)
                 Die();
+
+            NearestEnemy();
         }
 
         #endregion
@@ -94,6 +137,7 @@ namespace SimpleBehaviorTree.Examples
         {
             father = father != null ? father : this.transform.parent.parent.gameObject; // Making sure it always has a parent
             position = transform.position; // Sets start position
+            team = GetComponent<MyTeam>().team;
         }
 
         private void Start()
@@ -124,6 +168,13 @@ namespace SimpleBehaviorTree.Examples
             transform.LookAt(position + Time.fixedDeltaTime * velocity);
 
             tree.Update(Time.deltaTime);
+        }
+
+        private void Update()
+        {
+            Transform enemy = NearestEnemy();
+
+            target = enemy != null ? enemy.gameObject : null;
         }
 
         private void OnDrawGizmos()
@@ -245,6 +296,7 @@ namespace SimpleBehaviorTree.Examples
                 {
                     new Steering.Seek(target),
                     new Steering.AvoidObstacle(),
+                    new Steering.Flock(father)
                 },
                 "Approach w/ avoids"
             );
@@ -258,7 +310,8 @@ namespace SimpleBehaviorTree.Examples
                 new IBehavior[]
                 {
                     new Steering.Pursue(target),
-                    new Steering.AvoidObstacle()
+                    new Steering.AvoidObstacle(),
+                    new Steering.Flock(father)
                 },
                 "Pursue w/ avoids"
             );

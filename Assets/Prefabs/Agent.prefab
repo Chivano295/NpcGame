@@ -261,6 +261,7 @@ GameObject:
   - component: {fileID: 3870930051781524169}
   - component: {fileID: -1967560529706461736}
   - component: {fileID: 3917903923934111603}
+  - component: {fileID: 5395034360282112046}
   m_Layer: 8
   m_Name: Agent
   m_TagString: Untagged
@@ -361,12 +362,19 @@ MonoBehaviour:
   target: {fileID: 0}
   father: {fileID: 0}
   waypoints: []
+  team: 0
   doNotMove: 0
   label: 
   settings: {fileID: 11400000, guid: 69d2a2b28a92f35449d7dfbddf3d4048, type: 2}
   position: {x: 0, y: 0, z: 0}
   velocity: {x: 0, y: 0, z: 0}
   steerfor: {x: 0, y: 0, z: 0}
+  attackDamage: 20
+  attackSpeed: 1
+  moveSpeed: 16
+  viewRange: 20
+  defense: 50
+  hp: 100
 --- !u!114 &3917903923934111603
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -381,7 +389,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outlineMode: 0
   outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 1
+  outlineWidth: 0.5
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
+--- !u!114 &5395034360282112046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3870930051781524171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 596498f1bd8193e43a3e66623758f098, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  team: 1
