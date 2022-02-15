@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using TMPro;
 using SimpleBehaviorTree.Examples;
 
 public class SpawnManager : MonoBehaviour
@@ -20,8 +20,18 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private int attackSpeed = 0;
     [SerializeField] private int viewRange = 0;
 
+    [SerializeField] private int totalPoints = 100;
+
     [Header("Private")]
     private List<GameObject> units = new List<GameObject>();
+
+    [Header("Text")]
+    public TextMeshProUGUI HPpts;
+    public TextMeshProUGUI DEFpts;
+    public TextMeshProUGUI DMGpts;
+    public TextMeshProUGUI SPDpts;
+    public TextMeshProUGUI ATSPDpts;
+    public TextMeshProUGUI VRpts;
 
     public void ChangeHP(int newHP)
     {
@@ -34,12 +44,12 @@ public class SpawnManager : MonoBehaviour
 
         List<GameObject> newUnits = new List<GameObject>();
 
-        Transform group = new GameObject("Unit Group").transform;
-        group.parent = unitFather;
+        GameObject group = new GameObject("Unit Group");
+        group.transform.parent = unitFather;
 
         for (int i = 0; i < 10; i++)
         {
-            GameObject newUnit = Instantiate(unit, group);
+            GameObject newUnit = Instantiate(unit);
 
             newUnits.Add(newUnit);
             units.Add(newUnit);
@@ -60,9 +70,73 @@ public class SpawnManager : MonoBehaviour
         StartCoroutine(WaveSpawner());
     }
 
+    public void Update()
+    {
+        HPpts.text = "" + hp;
+        DEFpts.text = "" + defense;
+        DMGpts.text = "" + attackDamage;
+        SPDpts.text = "" + moveSpeed;
+        ATSPDpts.text = "" + attackSpeed;
+        VRpts.text = "" + viewRange;
+    }
 
     private void Start()
     {
         StartCoroutine(WaveSpawner());
     }
+
+    public void HP1()
+    {
+        hp = hp + 1;
+
+    }
+    public void HP2()
+    {
+        hp = hp - 1;
+    }
+    public void DEF1()
+    {
+        defense = defense + 1;
+    }
+    public void DEF2()
+    {
+        defense = defense - 1;
+    }
+    public void DMG1()
+    {
+        attackDamage = attackDamage + 1;
+    }
+    public void DMG2()
+    {
+        attackDamage = attackDamage - 1;
+    }
+    public void SPD1()
+    {
+        moveSpeed = moveSpeed + 1;
+    }
+    public void SPD2()
+    {
+        moveSpeed = moveSpeed - 1;
+    }
+    public void ATSPD1()
+    {
+        attackSpeed = attackSpeed + 1;
+    }
+    public void ATSPD2()
+    {
+        attackSpeed = attackSpeed - 1;
+    }
+    public void VR1()
+    {
+        viewRange = viewRange + 1;
+    }
+    public void VR2()
+    {
+        viewRange = viewRange - 1;
+    }
+    public void MaxPTS()
+    {
+
+    }
+       
 }
