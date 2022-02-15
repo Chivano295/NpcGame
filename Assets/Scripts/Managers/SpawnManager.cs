@@ -87,12 +87,19 @@ public class SpawnManager : MonoBehaviour
 
     public void HP1()
     {
-        hp = hp + 1;
-
+        if( totalPoints > 0)
+        {
+            hp = hp + 1;
+        }
     }
     public void HP2()
     {
-        hp = hp - 1;
+        if (hp > 0)
+        {
+            hp = hp - 1;
+            MaxPTS1();
+        }
+           
     }
     public void DEF1()
     {
@@ -134,9 +141,13 @@ public class SpawnManager : MonoBehaviour
     {
         viewRange = viewRange - 1;
     }
-    public void MaxPTS()
+    public void MaxPTS1()
     {
-
+        totalPoints += 1;
     }
-       
+    public void MaxPTS2()
+    {
+        totalPoints -= 1;
+    }
+
 }
