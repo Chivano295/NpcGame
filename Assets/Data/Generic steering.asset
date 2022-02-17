@@ -30,12 +30,12 @@ MonoBehaviour:
   wallLayer: EPic
   obstacleLayer: EPic
   flockLayer: coolio
-  flockAlignmentWeight: 7
-  flockCohesionWeight: 7
-  flockAlignmentRadius: 9e+9
-  flockCohesionRadius: 9e+9
-  flockSeparationWeight: 15
-  flockSeparationRadius: 3
-  flockVisibilityAngle: 180
+  flockAlignmentWeight: 1
+  flockCohesionWeight: 444
+  flockAlignmentRadius: 2
+  flockCohesionRadius: 2
+  flockSeparationWeight: 1
+  flockSeparationRadius: 1
+  flockVisibilityAngle: 360
   hideLayer: 
   hideOffset: 0

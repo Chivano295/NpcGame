@@ -8,11 +8,14 @@ public class SpawnManager : MonoBehaviour
 {
     [Header("Enviorment")]
     [SerializeField] private Transform unitFather;
+    [SerializeField] private Transform spawnPosition;
 
     [Header("Prefabs")]
     [SerializeField] private GameObject unit;
+    [SerializeField] private Color color;
 
     [Header("Unit Stats")]
+    [SerializeField] private bool team;
     [SerializeField] private int hp = 0;
     [SerializeField] private int defense = 0;
     [SerializeField] private int moveSpeed = 0;
@@ -49,7 +52,9 @@ public class SpawnManager : MonoBehaviour
 
         for (int i = 0; i < 10; i++)
         {
-            GameObject newUnit = Instantiate(unit);
+            GameObject newUnit = Instantiate(unit, spawnPosition.position, Quaternion.identity, group.transform);
+
+            newUnit.GetComponent<Renderer>().material.color = color;
 
             newUnits.Add(newUnit);
             units.Add(newUnit);
@@ -58,13 +63,17 @@ public class SpawnManager : MonoBehaviour
         foreach (GameObject unit in newUnits)
         {
             AgentBrain brain = unit.GetComponent<AgentBrain>();
+            MyTeam myTeam = unit.GetComponent<MyTeam>();
 
-            brain.hp = hp;
-            brain.defense = defense;
-            brain.moveSpeed = moveSpeed;
-            brain.attackDamage = attackDamage;
-            brain.attackSpeed = attackSpeed;
-            brain.viewRange = viewRange;
+            myTeam.team = team;
+            brain.team = team;
+
+            brain.hp           += hp;
+            brain.defense      += defense;
+            brain.moveSpeed    += moveSpeed;
+            brain.attackDamage += attackDamage;
+            brain.attackSpeed  += attackSpeed;
+            brain.viewRange    += viewRange;
         }
 
         StartCoroutine(WaveSpawner());
@@ -72,12 +81,12 @@ public class SpawnManager : MonoBehaviour
 
     public void Update()
     {
-        HPpts.text = "" + hp;
-        DEFpts.text = "" + defense;
-        DMGpts.text = "" + attackDamage;
-        SPDpts.text = "" + moveSpeed;
-        ATSPDpts.text = "" + attackSpeed;
-        VRpts.text = "" + viewRange;
+        //HPpts.text = "" + hp;
+        //DEFpts.text = "" + defense;
+        //DMGpts.text = "" + attackDamage;
+        //SPDpts.text = "" + moveSpeed;
+        //ATSPDpts.text = "" + attackSpeed;
+        //VRpts.text = "" + viewRange;
     }
 
     private void Start()
@@ -149,5 +158,4 @@ public class SpawnManager : MonoBehaviour
     {
         totalPoints -= 1;
     }
-
 }

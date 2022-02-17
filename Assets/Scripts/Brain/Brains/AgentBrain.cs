@@ -12,9 +12,10 @@ namespace SimpleBehaviorTree.Examples
 
         [Header("Object Settings")]
         [SerializeField] private GameObject   target; // our target object
+        [SerializeField] private GameObject   group;
         [SerializeField] private GameObject   father; // The parent from the agent
         [SerializeField] private GameObject[] waypoints;
-        [SerializeField] private bool         team;
+        [SerializeField] public  bool         team;
 
         [SerializeField] private float targetDistance = Mathf.Infinity;
 
@@ -99,6 +100,9 @@ namespace SimpleBehaviorTree.Examples
 
         void Die()
         {
+            if (group.transform.childCount == 0)
+                Destroy(group);
+
             StopAllBehaviors();
             Destroy(this.gameObject);
         }
@@ -149,6 +153,7 @@ namespace SimpleBehaviorTree.Examples
             father = father != null ? father : this.transform.parent.parent.gameObject; // Making sure it always has a parent
             position = transform.position; // Sets start position
             team = GetComponent<MyTeam>().team;
+            group = this.transform.parent.gameObject;
         }
 
         private void Start()
@@ -284,7 +289,7 @@ namespace SimpleBehaviorTree.Examples
         private NodeState ToApproach(Blackboard bb)
         {
             SetBehaviors(
-                new IBehavior[] { new Seek(target), new AvoidObstacle(), new Flock(father, this) },
+                new IBehavior[] { new Seek(target), new AvoidObstacle(), new Flock(this.transform.parent.gameObject, this) },
                 "Approach w/ avoids"
             );
 
@@ -294,7 +299,7 @@ namespace SimpleBehaviorTree.Examples
         private NodeState ToPursue(Blackboard bb)
         {
             SetBehaviors(
-                new IBehavior[] { new Pursue(target), new AvoidObstacle(), new Flock(father, this) },
+                new IBehavior[] { new Pursue(target), new AvoidObstacle(), new Flock(this.transform.parent.gameObject, this) },
                 "Pursue w/ avoids"
             );
 

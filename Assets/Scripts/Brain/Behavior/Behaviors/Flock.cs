@@ -8,7 +8,7 @@ namespace Steering
     public class Flock : Behavior 
     {
 
-        private readonly Collider myCollider;
+        private readonly GameObject myObj;
 
         private int               flockLayer;
         private float             largestRadius;
@@ -23,7 +23,7 @@ namespace Steering
 
         public Flock(GameObject obj, AgentBrain brain)
         {
-            myCollider = obj.GetComponent<Collider>();
+            myObj = obj;
             megaBrain = brain;
         }
 
@@ -87,7 +87,7 @@ namespace Steering
                 float   sqrDistance       = neighborDirection.sqrMagnitude;
 
                 // skip neigbor if not in sight
-                if (Vector3.Angle(myCollider.transform.forward, neighborDirection) > cont.settings.flockVisibilityAngle)
+                if (Vector3.Angle(myObj.transform.forward, neighborDirection) > cont.settings.flockVisibilityAngle)
                     continue;
 
                 // update calculations
