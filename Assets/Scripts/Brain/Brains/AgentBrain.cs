@@ -4,23 +4,19 @@ using UnityEngine;
 
 using Steering;
 
-
 namespace SimpleBehaviorTree.Examples
 {
-    class HunterBlackboardBrain : Blackboard
-    {
-        public float distanceToTarget = 0.0f;
-    }
-
     public class AgentBrain : MonoBehaviour
     {
         [SerializeField] private BehaviorTree tree; // the behavior tree
 
         [Header("Object Settings")]
-        public GameObject   target; // our target object
-        public GameObject   father; // The parent from the agent
-        public GameObject[] waypoints;
-        public bool         team;
+        [SerializeField] private GameObject   target; // our target object
+        [SerializeField] private GameObject   father; // The parent from the agent
+        [SerializeField] private GameObject[] waypoints;
+        [SerializeField] private bool         team;
+
+        [SerializeField] private float targetDistance = Mathf.Infinity;
 
         [Header("Private")]
         [SerializeField] private HunterBlackboard blackboard; // the blackboard used to pass info to the behavior tree during updates
@@ -37,8 +33,16 @@ namespace SimpleBehaviorTree.Examples
 
         private IBehavior[] behaviors = { }; // all behaviors for this steering object
 
+        void StopAllBehaviors()
+        {
+            foreach (IBehavior behav in behaviors)
+                behav.Stop();
+        }
+
         void SetBehaviors(IBehavior[] behavior, string lab)
         {
+            StopAllBehaviors();
+
             //remember new settings
             behaviors = behavior;
             label = lab;
@@ -46,17 +50,6 @@ namespace SimpleBehaviorTree.Examples
             //Start all behaviours
             foreach (IBehavior behav in behavior)
                 behav.Start(new BehaviorContext(position, velocity, settings));
-        }
-
-        public void ForceWalk(Vector3 position)
-        {
-            SetBehaviors(
-                new IBehavior[]
-                {
-                    new Steering.Arrive(position),
-                },
-                "Driven by God"
-            );
         }
 
         #region Custom functions
@@ -71,11 +64,6 @@ namespace SimpleBehaviorTree.Examples
             return children;
         }
 
-        float GetDistance(Transform a)
-        {
-            return Vector3.Distance(a.position, this.position);
-        }
-
         Transform NearestEnemy()
         {
             Transform chosenOne = null;
@@ -88,7 +76,7 @@ namespace SimpleBehaviorTree.Examples
                     if (unit.GetComponent<MyTeam>().team == team)
                         continue;
 
-                    float dist = GetDistance(unit);
+                    float dist = Vector3.Distance(unit.position, this.position);
 
                     (distance, chosenOne) = dist < distance && unit != this.transform ? (dist, unit) : (distance, chosenOne);
                 }
@@ -102,7 +90,7 @@ namespace SimpleBehaviorTree.Examples
         #region Unit Stats
 
         [Header("Unit Stats")]
-        public int attackDamage = 20;
+        public int attackDamage = 1;
         public int attackSpeed  = 1;
         public int moveSpeed    = 16;
         public int viewRange    = 20;
@@ -111,20 +99,43 @@ namespace SimpleBehaviorTree.Examples
 
         void Die()
         {
+            StopAllBehaviors();
             Destroy(this.gameObject);
         }
 
         public void TakeDamage(int damage)
         {
-            int newDamage = damage - defense;
+            if (Random.Range(1, 5) == 1)
+                return;
 
-            defense = newDamage <= 0 ? newDamage : 0;
-            hp = newDamage > 0 ? hp - newDamage : hp;
+            int damage2 = defense - damage;
+
+            defense = damage2 <= 0 ? 0 : damage2;
+            hp = damage2 < 0 ? hp + damage2 : hp;
 
             if (hp <= 0)
                 Die();
+        }
 
-            NearestEnemy();
+        public void AttackEnemy()
+        {
+            if (!target || !target.GetComponent<AgentBrain>())
+                return;
+
+            target.GetComponent<AgentBrain>().TakeDamage(attackDamage);
+        }
+
+        IEnumerator Attack()
+        {
+            while (true)
+            {
+                yield return new WaitForSecondsRealtime(attackSpeed + Random.Range(-50, 50) / 10);
+
+                if (label != "Attack")
+                    continue;
+
+                AttackEnemy();
+            }
         }
 
         #endregion
@@ -147,6 +158,9 @@ namespace SimpleBehaviorTree.Examples
 
             // prepare behavior tree
             tree = new BehaviorTree(BuildTree1(), blackboard, BlackboardUpdater) { Name = "SimpleTree" };
+
+            // Starts the attack loop
+            StartCoroutine(Attack());
         }
 
         private void FixedUpdate()
@@ -207,6 +221,14 @@ namespace SimpleBehaviorTree.Examples
                         .End()
                     .End()
 
+                    .Sequence("Wander")
+                        .Condition("CanWander", CanWander)
+                        .Do("ToWander", ToWander)
+                        .RepeatUntilFailure("RepeatUntilFailure")
+                            .Condition("CanWander", CanWander)
+                        .End()
+                    .End()
+
                     .Sequence("Approach")
                         .Condition("InApproachRangeOnly", InApproachRangeOnly)
                         .Do("ToApproach", ToApproach)
@@ -243,11 +265,7 @@ namespace SimpleBehaviorTree.Examples
 
         private void BlackboardUpdater(Blackboard bb)
         {
-            // update distance to target
-            if (target)
-                (blackboard as HunterBlackboard).distanceToTarget = (target.transform.position - transform.position).magnitude;
-            else
-                (blackboard as HunterBlackboard).distanceToTarget = Mathf.Infinity;
+            targetDistance = target ? (target.transform.position - this.transform.position).magnitude : Mathf.Infinity;
         }
 
         //------------------------------------------------------------------------------------------
@@ -255,49 +273,18 @@ namespace SimpleBehaviorTree.Examples
         //------------------------------------------------------------------------------------------
 
         #region Action methods linked to the behavior tree
-        private bool InApproachRangeOnly(Blackboard bb)
-        {
-            return !InPursueRange(bb) && InApproachRange(bb);
-        }
-
-        private bool InApproachRange(Blackboard bb)
-        {
-            return (bb as HunterBlackboard).distanceToTarget < settings.approachRadius;
-        }
-
-        private bool InPursueRangeOnly(Blackboard bb)
-        {
-            return !InAttackRange(bb) && InPursueRange(bb);
-        }
-
-        private bool InPursueRange(Blackboard bb)
-        {
-            return (bb as HunterBlackboard).distanceToTarget < settings.pursueRadius;
-        }
-
-        private bool InAttackRange(Blackboard bb)
-        {
-            return (bb as HunterBlackboard).distanceToTarget < settings.attackRadius;
-        }
-
-        private bool CanFollowPath(Blackboard bb)
-        {
-            if (waypoints.Length > 0)
-                return true;
-            else
-                return false;
-        }
-
+        private bool InApproachRangeOnly(Blackboard bb) { return !InPursueRange(bb) && InApproachRange(bb); }
+        private bool InApproachRange(Blackboard bb)     { return targetDistance < settings.approachRadius;  }
+        private bool InPursueRangeOnly(Blackboard bb)   { return !InAttackRange(bb) && InPursueRange(bb);   }
+        private bool InPursueRange(Blackboard bb)       { return targetDistance < settings.pursueRadius;    }
+        private bool InAttackRange(Blackboard bb)       { return targetDistance < settings.attackRadius;    }
+        private bool CanFollowPath(Blackboard bb)       { return waypoints.Length > 0;                      }
+        private bool CanWander(Blackboard bb)           { return targetDistance > settings.approachRadius;  }
 
         private NodeState ToApproach(Blackboard bb)
         {
             SetBehaviors(
-                new IBehavior[]
-                {
-                    new Steering.Seek(target),
-                    new Steering.AvoidObstacle(),
-                    new Steering.Flock(father)
-                },
+                new IBehavior[] { new Seek(target), new AvoidObstacle(), new Flock(father, this) },
                 "Approach w/ avoids"
             );
 
@@ -307,12 +294,7 @@ namespace SimpleBehaviorTree.Examples
         private NodeState ToPursue(Blackboard bb)
         {
             SetBehaviors(
-                new IBehavior[]
-                {
-                    new Steering.Pursue(target),
-                    new Steering.AvoidObstacle(),
-                    new Steering.Flock(father)
-                },
+                new IBehavior[] { new Pursue(target), new AvoidObstacle(), new Flock(father, this) },
                 "Pursue w/ avoids"
             );
 
@@ -322,23 +304,27 @@ namespace SimpleBehaviorTree.Examples
         private NodeState ToIdle(Blackboard bb)
         {
             SetBehaviors(
-                new IBehavior[]
-                {
-                    new Steering.Idle(),
-                },
+                new IBehavior[] { new Idle() },
                 "Idle"
             );
 
             return NodeState.SUCCESS;
         }
 
+        private NodeState ToWander(Blackboard bb)
+        {
+            SetBehaviors(
+                new IBehavior[] { new Wander(this.transform), new AvoidObstacle(), new AvoidWall() },
+                "Wander"
+            );
+
+            return NodeState.SUCCESS;
+        }    
+
         private NodeState ToAttack(Blackboard bb)
         {
             SetBehaviors(
-                new IBehavior[]
-                {
-                    new Steering.Idle(),
-                },
+                new IBehavior[] { new Idle() },
                 "Attack"
             );
 
@@ -348,14 +334,9 @@ namespace SimpleBehaviorTree.Examples
         private NodeState ToFollowPath(Blackboard bb)
         {
             SetBehaviors(
-                new IBehavior[]
-                {
-                    new Steering.FollowPath(waypoints)
-                },
+                new IBehavior[] { new FollowPath(waypoints) }, 
                 "Follow Path"
             );
-
-            Debug.Log("ok");
 
             return NodeState.SUCCESS;
         }

@@ -27,6 +27,8 @@ namespace Steering
             Support.DrawRay(context.position, velocityDesired, Color.blue);
         }
 
+        public virtual void Stop() { }
+
         //------------------------------------------------------------------------------------------
         //------------------------------------------------------------------------------------------
         public bool ArriveEnabled(BehaviorContext context)

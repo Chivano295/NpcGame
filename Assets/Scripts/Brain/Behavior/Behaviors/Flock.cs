@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 using SimpleBehaviorTree.Examples;
 
@@ -6,14 +7,29 @@ namespace Steering
 {
     public class Flock : Behavior 
     {
+
         private readonly Collider myCollider;
 
         private int               flockLayer;
         private float             largestRadius;
 
-        public Flock(GameObject obj)
+        private Vector3 SteerForce = Vector3.zero;
+
+        private BehaviorContext cont;
+
+        private Coroutine loop;
+
+        private AgentBrain megaBrain;
+
+        public Flock(GameObject obj, AgentBrain brain)
         {
             myCollider = obj.GetComponent<Collider>();
+            megaBrain = brain;
+        }
+
+        public override void Stop()
+        {
+            megaBrain.StopCoroutine(loop);
         }
 
         //------------------------------------------------------------------------------------------
@@ -22,32 +38,40 @@ namespace Steering
         {
             base.Start(context);
 
+            cont = context;
+
+
             // get layer mask using the flock layer name
-            flockLayer = LayerMask.GetMask(context.settings.flockLayer);
+            flockLayer = LayerMask.GetMask(cont.settings.flockLayer);
 
             // determine largest radius
             largestRadius = 0.0f;
-            if (context.settings.flockAlignmentWeight > 0.0f)
-                largestRadius = Mathf.Max(largestRadius, context.settings.flockAlignmentRadius);
-            if (context.settings.flockCohesionWeight > 0.0f)
-                largestRadius = Mathf.Max(largestRadius, context.settings.flockCohesionRadius);
-            if (context.settings.flockSeparationWeight > 0.0f)
-                largestRadius = Mathf.Max(largestRadius, context.settings.flockSeparationRadius);
+            if (cont.settings.flockAlignmentWeight > 0.0f)
+                largestRadius = Mathf.Max(largestRadius, cont.settings.flockAlignmentRadius);
+            if (cont.settings.flockCohesionWeight > 0.0f)
+                largestRadius = Mathf.Max(largestRadius, cont.settings.flockCohesionRadius);
+            if (cont.settings.flockSeparationWeight > 0.0f)
+                largestRadius = Mathf.Max(largestRadius, cont.settings.flockSeparationRadius);
+
+            loop = megaBrain.StartCoroutine(Epic());
         }
 
         //------------------------------------------------------------------------------------------
         //------------------------------------------------------------------------------------------
         private Vector3 CalculateDesiredVelocity(BehaviorContext context)
         {
+            Vector3 pos = context.position;
+
             // find all neighbors
-            Collider[] neighbors = Physics.OverlapSphere(context.position, largestRadius, flockLayer, QueryTriggerInteraction.Ignore);
+            Collider[] neighbors = Physics.OverlapSphere(pos, largestRadius, flockLayer, QueryTriggerInteraction.Ignore);
+
             if (neighbors.Length == 0)
                 return Vector3.zero;
 
             // prepare to calculate the three flock calculation forces
-            FlockAlignment  alignment  = new FlockAlignment (context.settings.flockAlignmentRadius );
-            FlockCohesion   cohesion   = new FlockCohesion  (context.settings.flockCohesionRadius  );
-            FlockSeparation separation = new FlockSeparation(context.settings.flockSeparationRadius);
+            FlockAlignment  alignment  = new FlockAlignment (cont.settings.flockAlignmentRadius );
+            FlockCohesion   cohesion   = new FlockCohesion  (cont.settings.flockCohesionRadius  );
+            FlockSeparation separation = new FlockSeparation(cont.settings.flockSeparationRadius);
             
             // process all neigbors
             foreach (Collider neighbor in neighbors)
@@ -59,11 +83,11 @@ namespace Steering
                     continue;
 
                 // calcute direction and squared distance to neighbor
-                Vector3 neighborDirection = neighborSteering.position - context.position;
+                Vector3 neighborDirection = neighborSteering.position - pos;
                 float   sqrDistance       = neighborDirection.sqrMagnitude;
 
                 // skip neigbor if not in sight
-                if (Vector3.Angle(myCollider.transform.forward, neighborDirection) > context.settings.flockVisibilityAngle)
+                if (Vector3.Angle(myCollider.transform.forward, neighborDirection) > cont.settings.flockVisibilityAngle)
                     continue;
 
                 // update calculations
@@ -73,18 +97,29 @@ namespace Steering
             }
 
             // calculate desired velocity
-            Vector3 desiredVelocity = alignment .DesiredVelocity()                   * context.settings.flockAlignmentWeight +
-                                      cohesion  .DesiredVelocity(context.position)   * context.settings.flockCohesionWeight  +
-                                      separation.DesiredVelocity()                   * context.settings.flockSeparationWeight;
-            return desiredVelocity.normalized * context.settings.maxDesiredVelocity;
+            Vector3 desiredVelocity = alignment .DesiredVelocity()                   * cont.settings.flockAlignmentWeight +
+                                      cohesion  .DesiredVelocity(pos)                * cont.settings.flockCohesionWeight  +
+                                      separation.DesiredVelocity()                   * cont.settings.flockSeparationWeight;
+
+            return desiredVelocity.normalized * cont.settings.maxDesiredVelocity;
+        }
+
+        IEnumerator Epic()
+        {
+            while (true)
+            {
+                yield return new WaitForSeconds(0.2f);
+
+                SteerForce = CalculateDesiredVelocity(cont);
+            }
         }
 
         //------------------------------------------------------------------------------------------
         //------------------------------------------------------------------------------------------
         public override Vector3 CalculateSteeringForce(float dt, BehaviorContext context)
         {
-            // update target position plus desired velocity, and return steering force 
-            velocityDesired = CalculateDesiredVelocity(context);
+            // update target position plus desired velocity, and return steering force
+            velocityDesired = SteerForce;
             positionTarget  = context.position + velocityDesired * dt;
             return velocityDesired - context.velocity;
         }

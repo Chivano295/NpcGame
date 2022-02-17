@@ -13,6 +13,7 @@ namespace Steering
         /// </summary>
         /// <param name="context">All the context information needed to perform the task at hand.</param>
         void Start(BehaviorContext context);
+        void Stop();
 
         ///<summary>
         /// Calculate the steering force contributed by this behavior
@@ -26,5 +27,6 @@ namespace Steering
         /// </summary>
         /// <param name="context"> All the context information needed to perform the task at hand.</param>
         void OnDrawGizmos(BehaviorContext context);
+
     }
 }

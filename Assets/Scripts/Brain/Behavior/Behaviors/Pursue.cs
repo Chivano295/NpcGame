@@ -21,15 +21,18 @@ namespace Steering
             target = targ;
         }
 
-
         override public Vector3 CalculateSteeringForce(float dt, BehaviorContext context)
         {
+            if (!target)
+                return velocityDesired - context.velocity;
+
             //stores the target position in a variable
             prevTargetPos = currentTargetPos;
             currentTargetPos = target.transform.position;
 
             // calculate speed
-           Vector3 speed =  (currentTargetPos - prevTargetPos) / dt;
+            Vector3 speed =  (currentTargetPos - prevTargetPos) / dt;
+
             //calculate the steering force
             positionTarget = (currentTargetPos + speed) * context.settings.lookAheadTime;
             velocityDesired = (positionTarget - context.position) * context.settings.maxDesiredVelocity;

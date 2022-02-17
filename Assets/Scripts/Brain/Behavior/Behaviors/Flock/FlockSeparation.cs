@@ -28,7 +28,7 @@ namespace Steering
         public Vector3 DesiredVelocity()
         {
             if (neighborCount > 0)
-                return -(total / (float)neighborCount).normalized;
+                return -(total / neighborCount).normalized;
             else
                 return Vector3.zero;
         }

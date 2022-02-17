@@ -13,15 +13,15 @@ MonoBehaviour:
   m_Name: Generic steering
   m_EditorClassIdentifier: 
   mass: 30
-  maxDesiredVelocity: 20
-  maxSteeringforce: 3
-  maxSpeed: 4
+  maxDesiredVelocity: 3
+  maxSteeringforce: 1
+  maxSpeed: 2
   arriveDistance: 0.5
   slowingDistance: 3
   lookAheadTime: 1
   pursueRadius: 5
   approachRadius: 100
-  attackRadius: 4
+  attackRadius: 3
   wanderCircleDistance: 10
   wanderCircleRadius: 5
   wanderNoiseAngle: 50
@@ -35,7 +35,7 @@ MonoBehaviour:
   flockAlignmentRadius: 9e+9
   flockCohesionRadius: 9e+9
   flockSeparationWeight: 15
-  flockSeparationRadius: 7
+  flockSeparationRadius: 3
   flockVisibilityAngle: 180
   hideLayer: 
   hideOffset: 0
