@@ -41,6 +41,17 @@ public class SpawnManager : MonoBehaviour
         hp = newHP;
     }
 
+
+    private Vector3 RandomVector()
+    {
+        Vector3 position = Vector3.zero;
+
+        position.x = Random.Range(-100, 100) / 100;
+        position.z = Random.Range(-100, 100) / 100;
+
+        return position.normalized;
+    }
+
     IEnumerator WaveSpawner()
     {
         yield return new WaitForSeconds(10);
@@ -52,7 +63,7 @@ public class SpawnManager : MonoBehaviour
 
         for (int i = 0; i < 10; i++)
         {
-            GameObject newUnit = Instantiate(unit, spawnPosition.position, Quaternion.identity, group.transform);
+            GameObject newUnit = Instantiate(unit, spawnPosition.position + RandomVector(), Quaternion.identity, group.transform);
 
             newUnit.GetComponent<Renderer>().material.color = color;
 
