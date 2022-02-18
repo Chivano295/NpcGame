@@ -17,6 +17,7 @@ public class CameraMover : MonoBehaviour
         mainCamera = Camera.main;
     }
 
+    // Checks for keymovement and scrolling size
     private void Update()
     {
         Vector3 moveDirection = Vector3.zero;
@@ -38,15 +39,17 @@ public class CameraMover : MonoBehaviour
         moveDirection = moveDirection * Time.deltaTime;
         moveDirection = Input.GetKey(KeyCode.Space) ? moveDirection * (CameraSpeed * 2) : moveDirection * CameraSpeed;
 
-        position += moveDirection;
+        position += moveDirection; // adds the added directions to the current position
     }
 
+    // Camera position updator
     private void FixedUpdate()
     {
         Vector3 pos = target != null ? target.position : position;
 
         pos += offset;
 
+        // Adds the new position with a lerp for smooth transistion
         mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position, pos, Time.deltaTime * CameraSpeed);
     }
 }

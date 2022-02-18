@@ -34,12 +34,7 @@ public class Selection : MonoBehaviour
         BoxSelection();
     }
 
-    float Floor(float number, int decimals)
-    {
-        float dec = number * (10 ^ (10 * decimals));
-        return (dec - (dec % 1)) / (10 ^ (10 * decimals));
-    }
-
+    // Checks & activation for box selection
     void BoxSelection()
     {
         bool mouseOne = Input.GetMouseButtonDown(0) ? true : false;
@@ -56,6 +51,7 @@ public class Selection : MonoBehaviour
         mouseDown = mouseTwo;
     }
 
+    // Get's every agent that exist
     List<Transform> GetAgents() // Very ugly but whatever, it works ig :P
     {
         List<Transform> Agents = new List<Transform>();
@@ -67,6 +63,7 @@ public class Selection : MonoBehaviour
         return Agents;
     }
 
+    // Math to check if enemy is in the box (yes all made by me Sten, math included)
     bool IsInBox(Vector3 position)
     {
         Vector3 ok0 = holdPos - movePos;
@@ -79,6 +76,7 @@ public class Selection : MonoBehaviour
         return false;
     }
 
+    // Highlight's all selected agents
     void Highlight(bool enabled)
     {
         foreach (GameObject agent in SelectedAgents)
@@ -90,6 +88,7 @@ public class Selection : MonoBehaviour
         }
     }
 
+    // Shows overall stats in UI
     void ShowStats(bool enabled)
     {
         if (SelectedAgents.Count == 0)
@@ -111,23 +110,24 @@ public class Selection : MonoBehaviour
             viewRange   += viewRange;
         }
 
-        uiHealth.text      = Floor((hp          / SelectedAgents.Count), 2).ToString();
-        uiDefense.text     = Floor((defense     / SelectedAgents.Count), 2).ToString();
-        uiDamage.text      = Floor((damage      / SelectedAgents.Count), 2).ToString();
-        uiSpeed.text       = Floor((speed       / SelectedAgents.Count), 2).ToString();
-        uiAttackSpeed.text = Floor((attackSpeed / SelectedAgents.Count), 2).ToString();
-        uiViewRange.text   = Floor((viewRange   / SelectedAgents.Count), 2).ToString();
+        uiHealth.text      = (hp          / SelectedAgents.Count).ToString();
+        uiDefense.text     = (defense     / SelectedAgents.Count).ToString();
+        uiDamage.text      = (damage      / SelectedAgents.Count).ToString();
+        uiSpeed.text       = (speed       / SelectedAgents.Count).ToString();
+        uiAttackSpeed.text = (attackSpeed / SelectedAgents.Count).ToString();
+        uiViewRange.text   = (viewRange   / SelectedAgents.Count).ToString();
     }
 
+    // Activates whenever button is released
     void ButtonReleased()
     {
-        if ((holdPos - movePos).magnitude <= 15)
+        if ((holdPos - movePos).magnitude <= 15) // checks if the distance holded is bigger than 15
         {
-            SingularSelect();
+            SingularSelect(); // Activates singular stats instead
             return;
         }
 
-        Highlight(false);
+        Highlight(false); // disables all the previous highlights
 
         SelectedAgents = new List<GameObject>();
 
@@ -135,17 +135,16 @@ public class Selection : MonoBehaviour
         {
             Vector3 screenPos = Camera.main.WorldToScreenPoint(agent.position);
 
-            if (agent.GetComponent<MyTeam>().team == false)
-                continue;
-            else if (IsInBox(screenPos))
+            if (agent.GetComponent<MyTeam>().team == true && IsInBox(screenPos)) // check's if it's my team and if it's inside of the selection box
                 SelectedAgents.Add(agent.gameObject);
         }
 
-        ShowStats(true);
+        ShowStats(true); // shows all selected agents stats
 
-        Highlight(true);
+        Highlight(true); // highlights all agents
     }
 
+    // Selects singular via raycast
     void SingularSelect()
     {
         Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -153,15 +152,22 @@ public class Selection : MonoBehaviour
 
         Highlight(false);
 
-        if (Physics.Raycast(mouseRay, out hit, 99999))
-            if (hit.transform.GetComponent<TeamBlue>())
+        if (Physics.Raycast(mouseRay, out hit, 999999))
+        {
+            MyTeam myTeam = hit.transform.GetComponent<MyTeam>();
+
+            if (myTeam && myTeam.team == true)
                 SelectedAgents = new List<GameObject>() { hit.transform.gameObject };
             else
                 SelectedAgents.Clear();
+        }
+
+        ShowStats(true);
 
         Highlight(true);
     }
 
+    // Draws the selection Box on screen
     private void OnGUI()
     {
         if (!mouseDown)
