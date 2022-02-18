@@ -12,10 +12,10 @@ namespace SimpleBehaviorTree.Examples
 
         [Header("Object Settings")]
         [SerializeField] private GameObject   target; // our target object
-        [SerializeField] private GameObject   group;
-        [SerializeField] private GameObject   father; // The parent from the agent
+        [SerializeField] private GameObject   group; // the group from the agent
+        [SerializeField] private GameObject   father; // The parent from the agent groups
         [SerializeField] private GameObject[] waypoints;
-        [SerializeField] public  bool         team;
+        [SerializeField] public  bool         team; // blue or red
 
         [SerializeField] private float targetDistance = Mathf.Infinity;
 
@@ -34,12 +34,14 @@ namespace SimpleBehaviorTree.Examples
 
         private IBehavior[] behaviors = { }; // all behaviors for this steering object
 
+        // Stops all behaviours
         void StopAllBehaviors()
         {
             foreach (IBehavior behav in behaviors)
                 behav.Stop();
         }
 
+        // Sets all the behavoirs
         void SetBehaviors(IBehavior[] behavior, string lab)
         {
             StopAllBehaviors();
@@ -54,7 +56,8 @@ namespace SimpleBehaviorTree.Examples
         }
 
         #region Custom functions
-
+        
+        // Get's all the children from given object
         List<Transform> GetChildren(Transform parent)
         {
             List<Transform> children = new List<Transform>();
@@ -65,6 +68,7 @@ namespace SimpleBehaviorTree.Examples
             return children;
         }
 
+        // Get's the closest enemy
         Transform NearestEnemy()
         {
             Transform chosenOne = null;
@@ -79,7 +83,7 @@ namespace SimpleBehaviorTree.Examples
 
                     float dist = Vector3.Distance(unit.position, this.position);
 
-                    (distance, chosenOne) = dist < distance && unit != this.transform ? (dist, unit) : (distance, chosenOne);
+                    (distance, chosenOne) = dist < distance && unit != this.transform ? (dist, unit) : (distance, chosenOne); // Check's if it's closer than the previous one
                 }
             }
 
@@ -90,14 +94,16 @@ namespace SimpleBehaviorTree.Examples
 
         #region Unit Stats
 
+        // Unit Stats
         [Header("Unit Stats")]
-        public int attackDamage = 1;
-        public int attackSpeed  = 1;
-        public int moveSpeed    = 16;
-        public int viewRange    = 20;
-        public int defense      = 50;
-        public int hp           = 100;
+        public float attackDamage = 1;
+        public float attackSpeed  = 1;
+        public float moveSpeed    = 16;
+        public float viewRange    = 20;
+        public float defense      = 50;
+        public float hp           = 100;
 
+        // Makes the unit die and stops all behavior loops
         void Die()
         {
             if (group.transform.childCount == 0)
@@ -107,38 +113,32 @@ namespace SimpleBehaviorTree.Examples
             Destroy(this.gameObject);
         }
 
-        public void TakeDamage(int damage)
+        // takes damage
+        public void TakeDamage(float damage)
         {
-            if (Random.Range(1, 5) == 1)
+            if (Random.Range(1, 5) == 1) // block chance
                 return;
 
-            int damage2 = defense - damage;
+            float damage2 = defense - damage;
 
-            defense = damage2 <= 0 ? 0 : damage2;
-            hp = damage2 < 0 ? hp + damage2 : hp;
+            defense = damage2 <= 0 ? 0 : damage2; // firsly removes defense
+            hp = damage2 < 0 ? hp + damage2 : hp; // secondly removes hp if no defense is left
 
             if (hp <= 0)
                 Die();
         }
 
-        public void AttackEnemy()
-        {
-            if (!target || !target.GetComponent<AgentBrain>())
-                return;
-
-            target.GetComponent<AgentBrain>().TakeDamage(attackDamage);
-        }
-
+        // loop check for attacking enemies
         IEnumerator Attack()
         {
             while (true)
             {
                 yield return new WaitForSecondsRealtime(attackSpeed + Random.Range(-50, 50) / 10);
 
-                if (label != "Attack")
+                if (label != "Attack" || !target || !target.GetComponent<AgentBrain>())
                     continue;
 
-                AttackEnemy();
+                target.GetComponent<AgentBrain>().TakeDamage(attackDamage);
             }
         }
 
@@ -168,6 +168,7 @@ namespace SimpleBehaviorTree.Examples
             StartCoroutine(Attack());
         }
 
+        // Used for moving the unit via behaviors
         private void FixedUpdate()
         {
             steerfor = Vector3.zero;
@@ -189,6 +190,7 @@ namespace SimpleBehaviorTree.Examples
             tree.Update(Time.deltaTime);
         }
 
+        // Repeataly get's a new enemy
         private void Update()
         {
             Transform enemy = NearestEnemy();
@@ -196,6 +198,7 @@ namespace SimpleBehaviorTree.Examples
             target = enemy != null ? enemy.gameObject : null;
         }
 
+        // Some gizmos info for unit editor
         private void OnDrawGizmos()
         {
             Support.DrawWireDisc(transform.position, settings.approachRadius, Color.cyan);
