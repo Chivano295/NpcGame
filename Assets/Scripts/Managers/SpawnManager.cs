@@ -116,7 +116,7 @@ public class SpawnManager : MonoBehaviour
     //All these functions below are assigned to buttons for selecting each statistic
     public void HP1()
     {
-        if( totalPoints > 0)
+        if (totalPoints > 0)
         {
             hp = hp + 1;
         }
@@ -128,7 +128,7 @@ public class SpawnManager : MonoBehaviour
             hp = hp - 1;
             MaxPTS1();
         }
-           
+
     }
     public void DEF1()
     {
@@ -157,6 +157,7 @@ public class SpawnManager : MonoBehaviour
         if (totalPoints > 0)
         {
             attackDamage = attackDamage - 1;
+        }
     }
     public void SPD1()
     {
@@ -188,13 +189,13 @@ public class SpawnManager : MonoBehaviour
     }
     public void MaxPTS2()
     {
-        if(totalPoints >= 0)
+        if (totalPoints >= 0)
         {
             totalPoints -= 1;
-            if(totalPoints <= 0)
-            totalPoints = 0;
+
+            if (totalPoints <= 0)
+                totalPoints = 0;
         }
-        
-        
+
     }
 }
