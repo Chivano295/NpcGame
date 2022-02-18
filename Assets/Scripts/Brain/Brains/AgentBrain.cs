@@ -226,6 +226,14 @@ namespace SimpleBehaviorTree.Examples
                         .End()
                     .End()
 
+                    .Sequence("Flee")
+                        .Condition("CanFlee", CanFlee)
+                        .Do("ToFlee", ToFlee)
+                        .RepeatUntilFailure("RepeatUntilFailure")
+                            .Condition("CanFlee", CanFlee)
+                        .End()
+                    .End()
+
                     .Sequence("Wander")
                         .Condition("CanWander", CanWander)
                         .Do("ToWander", ToWander)
@@ -340,7 +348,7 @@ namespace SimpleBehaviorTree.Examples
         private NodeState ToFlee(Blackboard bb)
         {
             SetBehaviors(
-                new IBehavior[] { new Flee(target), new AvoidObstacle(), new AvoidWall() },
+                new IBehavior[] { new Pursue(GameObject.FindGameObjectWithTag("Fountain")) },
                 "Flee"
             );
 

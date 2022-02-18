@@ -587,7 +587,7 @@ GameObject:
   - component: {fileID: 986307094947536513}
   m_Layer: 0
   m_Name: 'fountain '
-  m_TagString: Untagged
+  m_TagString: Fountain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
