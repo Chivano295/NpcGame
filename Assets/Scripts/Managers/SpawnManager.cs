@@ -43,6 +43,7 @@ public class SpawnManager : MonoBehaviour
     public TextMeshProUGUI VRpts;
     public TextMeshProUGUI TotalPTS;
     
+    //changes hp
     public void ChangeHP(int newHP)
     {
         hp = newHP;
