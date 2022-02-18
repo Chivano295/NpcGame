@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 using SimpleBehaviorTree.Examples;
 
@@ -19,7 +20,16 @@ public class Selection : MonoBehaviour
     [SerializeField] private GameObject previewPrefab;
 
     [Header("Epic")]
-    public List<GameObject> SelectedAgents = new List<GameObject>();
+    [SerializeField] private List<GameObject> SelectedAgents = new List<GameObject>();
+
+    [Header("UI")]
+    [SerializeField] private GameObject panel;
+    [SerializeField] private TextMeshProUGUI uiHealth;
+    [SerializeField] private TextMeshProUGUI uiDefense;
+    [SerializeField] private TextMeshProUGUI uiDamage;
+    [SerializeField] private TextMeshProUGUI uiSpeed;
+    [SerializeField] private TextMeshProUGUI uiAttackSpeed;
+    [SerializeField] private TextMeshProUGUI uiViewRange;
 
     void Update()
     {
@@ -78,6 +88,32 @@ public class Selection : MonoBehaviour
             agent.GetComponent<Outline>().enabled = enabled;
     }
 
+    void ShowStats(bool enabled)
+    {
+        panel.SetActive(enabled);
+
+        int hp = 0, defense = 0, damage = 0, speed = 0, attackSpeed = 0, viewRange = 0;
+
+        foreach (GameObject agent in SelectedAgents)
+        {
+            AgentBrain brain = agent.GetComponent<AgentBrain>();
+
+            hp          += brain.hp;
+            defense     += brain.hp;
+            damage      += brain.defense;
+            speed       += brain.moveSpeed;
+            attackSpeed += brain.attackSpeed;
+            viewRange   += viewRange;
+        }
+
+        uiHealth.text      = (hp          / SelectedAgents.Count).ToString();
+        uiDefense.text     = (defense     / SelectedAgents.Count).ToString();
+        uiDamage.text      = (damage      / SelectedAgents.Count).ToString();
+        uiSpeed.text       = (speed       / SelectedAgents.Count).ToString();
+        uiAttackSpeed.text = (attackSpeed / SelectedAgents.Count).ToString();
+        uiViewRange.text   = (viewRange   / SelectedAgents.Count).ToString();
+    }
+
     void ButtonReleased()
     {
         if ((holdPos - movePos).magnitude <= 15)
@@ -99,6 +135,8 @@ public class Selection : MonoBehaviour
             else if (IsInBox(screenPos))
                 SelectedAgents.Add(agent.gameObject);
         }
+
+        ShowStats(true);
 
         Highlight(true);
     }
