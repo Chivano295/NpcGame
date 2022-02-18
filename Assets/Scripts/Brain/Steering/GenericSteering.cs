@@ -11,6 +11,7 @@ public class GenericSteering : ScriptableObject
     public float maxSteeringforce = 3f; //max steering force in m/s
     public float maxSpeed = 3f; //max speed in m/s
 
+    //flee settings
     [Header("Flee")]
     public float fleeDistance = 10;
 
@@ -18,13 +19,16 @@ public class GenericSteering : ScriptableObject
     public float arriveDistance = 1f; // distance from target when you reach zero velocity
     public float slowingDistance = 2.0f; //distance from object where we Start slowing down
 
+    //settings for pursue and evade
     [Header("Pursue and Evade")]
     public float lookAheadTime = 1.0f;
     public float pursueRadius = 7;
 
+    //range before activating the approach
     [Header("Approach")]
     public float approachRadius = 10;
 
+    //radius for your attacking range
     [Header("Attack")]
     public float attackRadius = 4;
 
@@ -39,6 +43,7 @@ public class GenericSteering : ScriptableObject
     public string wallLayer;
     public string obstacleLayer;
 
+    //settings for flocking
     [Header("Flocking")]
     public string flockLayer;
     public float flockAlignmentWeight;
