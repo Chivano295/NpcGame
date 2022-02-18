@@ -9,6 +9,7 @@ TagManager:
   - Cp2
   - Cp3
   - Waypoint
+  - Fountain
   layers:
   - Default
   - TransparentFX
