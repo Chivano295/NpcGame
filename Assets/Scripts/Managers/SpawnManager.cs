@@ -39,6 +39,7 @@ public class SpawnManager : MonoBehaviour
     public TextMeshProUGUI SPDpts;
     public TextMeshProUGUI ATSPDpts;
     public TextMeshProUGUI VRpts;
+    public TextMeshProUGUI TotalPTS;
 
     
     public void ChangeHP(int newHP)
@@ -106,6 +107,8 @@ public class SpawnManager : MonoBehaviour
         SPDpts.text = "" + moveSpeed;
         ATSPDpts.text = "" + attackSpeed;
         VRpts.text = "" + viewRange;
+        TotalPTS.text = "Total points = " + totalPoints;
+
     }
     //starts the wave spawning
     private void Start()
@@ -118,30 +121,30 @@ public class SpawnManager : MonoBehaviour
     {
         if (totalPoints > 0)
         {
-            hp = hp + 1;
+            hp = hp + 5;
         }
     }
     public void HP2()
     {
         if (hp > 0)
         {
-            hp = hp - 1;
+            hp = hp - 5;
             MaxPTS1();
         }
 
     }
     public void DEF1()
     {
-        if (totalPoints > 0)
+        if (totalPoints > 5)
         {
-            defense = defense + 1;
+            defense = defense + 5;
         }
     }
     public void DEF2()
     {
         if (defense > 0)
         {
-            defense = defense - 1;
+            defense = defense - 5;
             MaxPTS1();
         }
     }
@@ -149,49 +152,71 @@ public class SpawnManager : MonoBehaviour
     {
         if (totalPoints > 0)
         {
-            attackDamage = attackDamage + 1;
+            attackDamage = attackDamage + 5;
         }
     }
     public void DMG2()
     {
-        if (totalPoints > 0)
+        if (attackDamage > 0)
         {
-            attackDamage = attackDamage - 1;
+            attackDamage = attackDamage - 5;
+            MaxPTS1();
         }
     }
     public void SPD1()
     {
-        moveSpeed = moveSpeed + 1;
+        if (totalPoints > 0)
+        {
+            moveSpeed = moveSpeed + 5;
+        }
     }
     public void SPD2()
     {
-        moveSpeed = moveSpeed - 1;
+        if (moveSpeed > 0)
+        {
+            moveSpeed = moveSpeed - 5;
+            MaxPTS1();
+        }
     }
     public void ATSPD1()
     {
-        attackSpeed = attackSpeed + 1;
+        if (totalPoints > 0)
+        {
+            attackSpeed = attackSpeed + 5;
+        }
     }
     public void ATSPD2()
     {
-        attackSpeed = attackSpeed - 1;
+        if (attackSpeed > 0)
+        {
+            attackSpeed = attackSpeed - 5;
+            MaxPTS1();
+        }
     }
     public void VR1()
     {
-        viewRange = viewRange + 1;
+        if (totalPoints > 0)
+        {
+            viewRange = viewRange + 5;
+        }
     }
     public void VR2()
     {
-        viewRange = viewRange - 1;
+        if (viewRange > 0)
+        {
+            viewRange = viewRange - 5;
+            MaxPTS1();
+        }
     }
     public void MaxPTS1()
     {
-        totalPoints += 1;
+        totalPoints += 5;
     }
     public void MaxPTS2()
     {
         if (totalPoints >= 0)
         {
-            totalPoints -= 1;
+            totalPoints -= 5;
 
             if (totalPoints <= 0)
                 totalPoints = 0;
