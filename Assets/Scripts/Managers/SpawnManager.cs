@@ -6,14 +6,17 @@ using SimpleBehaviorTree.Examples;
 
 public class SpawnManager : MonoBehaviour
 {
+    //enviremont variables
     [Header("Enviorment")]
     [SerializeField] private Transform unitFather;
     [SerializeField] private Transform spawnPosition;
 
+    //team and unit prefab
     [Header("Prefabs")]
     [SerializeField] private GameObject unit;
     [SerializeField] private Color color;
 
+    //statistics variables
     [Header("Unit Stats")]
     [SerializeField] private bool team;
     [SerializeField] private int hp = 0;
@@ -28,6 +31,7 @@ public class SpawnManager : MonoBehaviour
     [Header("Private")]
     private List<GameObject> units = new List<GameObject>();
 
+    //text for stats assigning
     [Header("Text")]
     public TextMeshProUGUI HPpts;
     public TextMeshProUGUI DEFpts;
@@ -36,12 +40,13 @@ public class SpawnManager : MonoBehaviour
     public TextMeshProUGUI ATSPDpts;
     public TextMeshProUGUI VRpts;
 
+    
     public void ChangeHP(int newHP)
     {
         hp = newHP;
     }
 
-
+    
     private Vector3 RandomVector()
     {
         Vector3 position = Vector3.zero;
@@ -52,6 +57,7 @@ public class SpawnManager : MonoBehaviour
         return position.normalized;
     }
 
+    //spawns an wave 
     IEnumerator WaveSpawner()
     {
         yield return new WaitForSeconds(10);
@@ -61,6 +67,7 @@ public class SpawnManager : MonoBehaviour
         GameObject group = new GameObject("Unit Group");
         group.transform.parent = unitFather;
 
+        //spawns the unit
         for (int i = 0; i < 10; i++)
         {
             GameObject newUnit = Instantiate(unit, spawnPosition.position + RandomVector(), Quaternion.identity, group.transform);
@@ -70,7 +77,7 @@ public class SpawnManager : MonoBehaviour
             newUnits.Add(newUnit);
             units.Add(newUnit);
         }
-
+        //sets the statistics onto the units
         foreach (GameObject unit in newUnits)
         {
             AgentBrain brain = unit.GetComponent<AgentBrain>();
@@ -90,21 +97,23 @@ public class SpawnManager : MonoBehaviour
         StartCoroutine(WaveSpawner());
     }
 
+    //updates the text while choosing statistics
     public void Update()
     {
-        //HPpts.text = "" + hp;
-        //DEFpts.text = "" + defense;
-        //DMGpts.text = "" + attackDamage;
-        //SPDpts.text = "" + moveSpeed;
-        //ATSPDpts.text = "" + attackSpeed;
-        //VRpts.text = "" + viewRange;
+        HPpts.text = "" + hp;
+        DEFpts.text = "" + defense;
+        DMGpts.text = "" + attackDamage;
+        SPDpts.text = "" + moveSpeed;
+        ATSPDpts.text = "" + attackSpeed;
+        VRpts.text = "" + viewRange;
     }
-
+    //starts the wave spawning
     private void Start()
     {
         StartCoroutine(WaveSpawner());
     }
 
+    //All these functions below are assigned to buttons for selecting each statistic
     public void HP1()
     {
         if( totalPoints > 0)
@@ -123,15 +132,25 @@ public class SpawnManager : MonoBehaviour
     }
     public void DEF1()
     {
-        defense = defense + 1;
+        if (totalPoints > 0)
+        {
+            defense = defense + 1;
+        }
     }
     public void DEF2()
     {
-        defense = defense - 1;
+        if (defense > 0)
+        {
+            defense = defense - 1;
+            MaxPTS1();
+        }
     }
     public void DMG1()
     {
-        attackDamage = attackDamage + 1;
+        if (totalPoints > 0)
+        {
+            attackDamage = attackDamage + 1;
+        }
     }
     public void DMG2()
     {
@@ -167,6 +186,13 @@ public class SpawnManager : MonoBehaviour
     }
     public void MaxPTS2()
     {
-        totalPoints -= 1;
+        if(totalPoints >= 0)
+        {
+            totalPoints -= 1;
+            if(totalPoints <= 0)
+            totalPoints = 0;
+        }
+        
+        
     }
 }
