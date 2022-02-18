@@ -32,13 +32,12 @@ public class Selection : MonoBehaviour
     void Update()
     {
         BoxSelection();
+    }
 
-        /* Unusable :(
-        MoveAgents();
-
-        if (Input.GetKey(KeyCode.Space) && PreviewExists())
-            MovePreview();
-        */
+    float Floor(float number, int decimals)
+    {
+        float dec = number * (10 ^ (10 * decimals));
+        return (dec - (dec % 1)) / (10 ^ (10 * decimals));
     }
 
     void BoxSelection()
@@ -93,14 +92,12 @@ public class Selection : MonoBehaviour
 
     void ShowStats(bool enabled)
     {
-        print(SelectedAgents.Count);
-
         if (SelectedAgents.Count == 0)
             return;
 
         panel.SetActive(enabled);
 
-        int hp = 0, defense = 0, damage = 0, speed = 0, attackSpeed = 0, viewRange = 0;
+        float hp = 0, defense = 0, damage = 0, speed = 0, attackSpeed = 0, viewRange = 0;
 
         foreach (GameObject agent in SelectedAgents)
         {
@@ -114,12 +111,12 @@ public class Selection : MonoBehaviour
             viewRange   += viewRange;
         }
 
-        uiHealth.text      = (hp          / SelectedAgents.Count).ToString();
-        uiDefense.text     = (defense     / SelectedAgents.Count).ToString();
-        uiDamage.text      = (damage      / SelectedAgents.Count).ToString();
-        uiSpeed.text       = (speed       / SelectedAgents.Count).ToString();
-        uiAttackSpeed.text = (attackSpeed / SelectedAgents.Count).ToString();
-        uiViewRange.text   = (viewRange   / SelectedAgents.Count).ToString();
+        uiHealth.text      = Floor((hp          / SelectedAgents.Count), 2).ToString();
+        uiDefense.text     = Floor((defense     / SelectedAgents.Count), 2).ToString();
+        uiDamage.text      = Floor((damage      / SelectedAgents.Count), 2).ToString();
+        uiSpeed.text       = Floor((speed       / SelectedAgents.Count), 2).ToString();
+        uiAttackSpeed.text = Floor((attackSpeed / SelectedAgents.Count), 2).ToString();
+        uiViewRange.text   = Floor((viewRange   / SelectedAgents.Count), 2).ToString();
     }
 
     void ButtonReleased()

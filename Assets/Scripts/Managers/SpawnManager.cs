@@ -7,7 +7,7 @@ using SimpleBehaviorTree.Examples;
 public class SpawnManager : MonoBehaviour
 {
     [Header("AI")]
-    [SerializeField] private bool enabled;
+    [SerializeField] private bool aiEnabled;
 
     //enviremont variables
     [Header("Enviorment")]
@@ -59,6 +59,34 @@ public class SpawnManager : MonoBehaviour
         return position.normalized;
     }
 
+    private void RandomizeStats()
+    {
+        int totalPoints = 100;
+
+        (hp, defense, moveSpeed, attackDamage, attackSpeed, viewRange) = (0, 0, 0, 0, 0, 0);
+
+        while (totalPoints > 0)
+        {
+            int randomStat = Random.Range(0, 6);
+            int pointsAmount = Random.Range(1, 6);
+
+            if (randomStat == 0)
+                hp += pointsAmount;
+            else if (randomStat == 1)
+                defense += pointsAmount;
+            else if (randomStat == 2)
+                moveSpeed += pointsAmount;
+            else if (randomStat == 3)
+                attackDamage += pointsAmount;
+            else if (randomStat == 4)
+                attackSpeed += pointsAmount;
+            else if (randomStat == 5)
+                viewRange += pointsAmount;
+
+            totalPoints -= pointsAmount;
+        }
+    }
+
     //spawns an wave 
     IEnumerator WaveSpawner()
     {
@@ -96,13 +124,16 @@ public class SpawnManager : MonoBehaviour
             brain.viewRange    += viewRange;
         }
 
+        if (aiEnabled)
+            RandomizeStats();
+
         StartCoroutine(WaveSpawner());
     }
 
     //updates the text while choosing statistics
     public void Update()
     {
-        if (enabled)
+        if (aiEnabled)
             return;
 
         HPpts.text = "" + hp;
