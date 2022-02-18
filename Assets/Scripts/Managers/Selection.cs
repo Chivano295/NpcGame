@@ -83,7 +83,12 @@ public class Selection : MonoBehaviour
     void Highlight(bool enabled)
     {
         foreach (GameObject agent in SelectedAgents)
+        {
+            if (agent == null)
+                continue;
+
             agent.GetComponent<Outline>().enabled = enabled;
+        }
     }
 
     void ShowStats(bool enabled)

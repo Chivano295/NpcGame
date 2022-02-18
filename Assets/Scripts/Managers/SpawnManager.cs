@@ -6,6 +6,9 @@ using SimpleBehaviorTree.Examples;
 
 public class SpawnManager : MonoBehaviour
 {
+    [Header("AI")]
+    [SerializeField] private bool enabled;
+
     //enviremont variables
     [Header("Enviorment")]
     [SerializeField] private Transform unitFather;
@@ -25,7 +28,6 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private int attackDamage = 0;
     [SerializeField] private int attackSpeed = 0;
     [SerializeField] private int viewRange = 0;
-
     [SerializeField] private int totalPoints = 100;
 
     [Header("Private")]
@@ -40,13 +42,11 @@ public class SpawnManager : MonoBehaviour
     public TextMeshProUGUI ATSPDpts;
     public TextMeshProUGUI VRpts;
     public TextMeshProUGUI TotalPTS;
-
     
     public void ChangeHP(int newHP)
     {
         hp = newHP;
     }
-
     
     private Vector3 RandomVector()
     {
@@ -101,6 +101,9 @@ public class SpawnManager : MonoBehaviour
     //updates the text while choosing statistics
     public void Update()
     {
+        if (enabled)
+            return;
+
         HPpts.text = "" + hp;
         DEFpts.text = "" + defense;
         DMGpts.text = "" + attackDamage;
@@ -108,7 +111,6 @@ public class SpawnManager : MonoBehaviour
         ATSPDpts.text = "" + attackSpeed;
         VRpts.text = "" + viewRange;
         TotalPTS.text = "Total points = " + totalPoints;
-
     }
     //starts the wave spawning
     private void Start()
@@ -135,7 +137,7 @@ public class SpawnManager : MonoBehaviour
     }
     public void DEF1()
     {
-        if (totalPoints > 5)
+        if (totalPoints > 0)
         {
             defense = defense + 5;
         }
