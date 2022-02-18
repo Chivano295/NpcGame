@@ -154,7 +154,9 @@ public class SpawnManager : MonoBehaviour
     }
     public void DMG2()
     {
-        attackDamage = attackDamage - 1;
+        if (totalPoints > 0)
+        {
+            attackDamage = attackDamage - 1;
     }
     public void SPD1()
     {
