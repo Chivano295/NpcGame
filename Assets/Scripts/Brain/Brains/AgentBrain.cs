@@ -278,13 +278,14 @@ namespace SimpleBehaviorTree.Examples
         //------------------------------------------------------------------------------------------
 
         #region Action methods linked to the behavior tree
-        private bool InApproachRangeOnly(Blackboard bb) { return !InPursueRange(bb) && InApproachRange(bb); }
-        private bool InApproachRange(Blackboard bb)     { return targetDistance < settings.approachRadius;  }
-        private bool InPursueRangeOnly(Blackboard bb)   { return !InAttackRange(bb) && InPursueRange(bb);   }
-        private bool InPursueRange(Blackboard bb)       { return targetDistance < settings.pursueRadius;    }
-        private bool InAttackRange(Blackboard bb)       { return targetDistance < settings.attackRadius;    }
-        private bool CanFollowPath(Blackboard bb)       { return waypoints.Length > 0;                      }
-        private bool CanWander(Blackboard bb)           { return targetDistance > settings.approachRadius;  }
+        private bool InApproachRangeOnly(Blackboard bb) { return !InPursueRange(bb) && InApproachRange(bb);          }
+        private bool InApproachRange(Blackboard bb)     { return targetDistance < settings.approachRadius;           }
+        private bool InPursueRangeOnly(Blackboard bb)   { return !InAttackRange(bb) && InPursueRange(bb);            }
+        private bool InPursueRange(Blackboard bb)       { return targetDistance < settings.pursueRadius;             }
+        private bool InAttackRange(Blackboard bb)       { return targetDistance < settings.attackRadius;             }
+        private bool CanFollowPath(Blackboard bb)       { return waypoints.Length > 0;                               }
+        private bool CanWander(Blackboard bb)           { return targetDistance > settings.approachRadius;           }
+        private bool CanFlee(Blackboard bb)             { return targetDistance > settings.fleeDistance && hp <= 20; }
 
         private NodeState ToApproach(Blackboard bb)
         {
@@ -331,6 +332,16 @@ namespace SimpleBehaviorTree.Examples
             SetBehaviors(
                 new IBehavior[] { new Idle() },
                 "Attack"
+            );
+
+            return NodeState.SUCCESS;
+        }
+
+        private NodeState ToFlee(Blackboard bb)
+        {
+            SetBehaviors(
+                new IBehavior[] { new Flee(target), new AvoidObstacle(), new AvoidWall() },
+                "Flee"
             );
 
             return NodeState.SUCCESS;

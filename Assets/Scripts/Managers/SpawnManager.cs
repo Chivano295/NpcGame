@@ -61,7 +61,7 @@ public class SpawnManager : MonoBehaviour
     //spawns an wave 
     IEnumerator WaveSpawner()
     {
-        yield return new WaitForSeconds(10);
+        yield return new WaitForSeconds(3);
 
         List<GameObject> newUnits = new List<GameObject>();
 

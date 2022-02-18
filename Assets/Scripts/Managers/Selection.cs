@@ -16,8 +16,6 @@ public class Selection : MonoBehaviour
 
     [Header("Env")]
     [SerializeField] private GameObject agents;
-    [SerializeField] private Transform previewFather;
-    [SerializeField] private GameObject previewPrefab;
 
     [Header("Epic")]
     [SerializeField] private List<GameObject> SelectedAgents = new List<GameObject>();
@@ -90,6 +88,11 @@ public class Selection : MonoBehaviour
 
     void ShowStats(bool enabled)
     {
+        print(SelectedAgents.Count);
+
+        if (SelectedAgents.Count == 0)
+            return;
+
         panel.SetActive(enabled);
 
         int hp = 0, defense = 0, damage = 0, speed = 0, attackSpeed = 0, viewRange = 0;
@@ -99,8 +102,8 @@ public class Selection : MonoBehaviour
             AgentBrain brain = agent.GetComponent<AgentBrain>();
 
             hp          += brain.hp;
-            defense     += brain.hp;
-            damage      += brain.defense;
+            defense     += brain.defense;
+            damage      += brain.attackDamage;
             speed       += brain.moveSpeed;
             attackSpeed += brain.attackSpeed;
             viewRange   += viewRange;
@@ -130,7 +133,7 @@ public class Selection : MonoBehaviour
         {
             Vector3 screenPos = Camera.main.WorldToScreenPoint(agent.position);
 
-            if (!agent.GetComponent<TeamBlue>())
+            if (agent.GetComponent<MyTeam>().team == false)
                 continue;
             else if (IsInBox(screenPos))
                 SelectedAgents.Add(agent.gameObject);
